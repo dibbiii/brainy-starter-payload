@@ -65,10 +65,27 @@ export interface Config {
   auth: {
     users: UserAuthOperations;
   };
-  blocks: {};
+  blocks: {
+    hero: HeroBlock;
+    text: TextBlock;
+    text_image: TextImageBlock;
+    cards: CardsBlock;
+    activities: ActivitiesBlock;
+    team: TeamBlock;
+    sponsors: SponsorsBlock;
+    gallery: GalleryBlock;
+    cta: CtaBlock;
+    stats: StatsBlock;
+    timeline: TimelineBlock;
+    documents: DocumentsBlock;
+    latest_news: LatestNewsBlock;
+    video: VideoBlock;
+    contacts: ContactsBlock;
+  };
   collections: {
     users: User;
     media: Media;
+    pages: Page;
     'payload-kv': PayloadKv;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
@@ -78,6 +95,7 @@ export interface Config {
   collectionsSelect: {
     users: UsersSelect<false> | UsersSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
+    pages: PagesSelect<false> | PagesSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
@@ -118,6 +136,300 @@ export interface UserAuthOperations {
   };
 }
 /**
+ * This interface was referenced by `Config`'s JSON-Schema via the `definition` "HeroBlock".
+ */
+export interface HeroBlock {
+  title: string;
+  subtitle?: string | null;
+  image?: (number | null) | Media;
+  button_label?: string | null;
+  button_url?: string | null;
+  size?: ('large' | 'medium') | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'hero';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema via the `definition` "media".
+ */
+export interface Media {
+  id: number;
+  /**
+   * Per le immagini: descrivi cosa si vede, per chi non può vederla. Per i documenti lascia vuoto. Per un codice QR scrivi dove porta.
+   */
+  alt?: string | null;
+  updatedAt: string;
+  createdAt: string;
+  url?: string | null;
+  thumbnailURL?: string | null;
+  filename?: string | null;
+  mimeType?: string | null;
+  filesize?: number | null;
+  width?: number | null;
+  height?: number | null;
+  focalX?: number | null;
+  focalY?: number | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema via the `definition` "TextBlock".
+ */
+export interface TextBlock {
+  title?: string | null;
+  content: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  };
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'text';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "TextImageBlock".
+ */
+export interface TextImageBlock {
+  title?: string | null;
+  content: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  };
+  image: number | Media;
+  image_side?: ('right' | 'left') | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'text_image';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "CardsBlock".
+ */
+export interface CardsBlock {
+  title?: string | null;
+  intro?: string | null;
+  items?:
+    | {
+        title: string;
+        /**
+         * Es. 120 km, Under 14, Sabato 9:00
+         */
+        highlight?: string | null;
+        text?: string | null;
+        image?: (number | null) | Media;
+        url?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'cards';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "ActivitiesBlock".
+ */
+export interface ActivitiesBlock {
+  title?: string | null;
+  intro?: string | null;
+  /**
+   * Es. I responsabili di settore. Compare solo se compili anche il link
+   */
+  link_label?: string | null;
+  link_url?: string | null;
+  show_managers?: boolean | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'activities';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "TeamBlock".
+ */
+export interface TeamBlock {
+  title?: string | null;
+  intro?: string | null;
+  limit?: number | null;
+  layout?: ('grid' | 'officers' | 'compact') | null;
+  /**
+   * Lascia vuoto per mostrare tutti. Deve coincidere con il campo «Gruppo» delle persone. Es. Cariche
+   */
+  group?: string | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'team';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "SponsorsBlock".
+ */
+export interface SponsorsBlock {
+  title?: string | null;
+  intro?: string | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'sponsors';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "GalleryBlock".
+ */
+export interface GalleryBlock {
+  title?: string | null;
+  images?:
+    | {
+        image: number | Media;
+        caption?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'gallery';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "CtaBlock".
+ */
+export interface CtaBlock {
+  title: string;
+  text?: string | null;
+  button_label: string;
+  button_url: string;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'cta';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "StatsBlock".
+ */
+export interface StatsBlock {
+  title?: string | null;
+  layout?: ('row' | 'cards') | null;
+  items?:
+    | {
+        /**
+         * Anche con testo o zero iniziale. Es. 1947, 07, 120 km
+         */
+        value: string;
+        /**
+         * Es. Anno di fondazione
+         */
+        label: string;
+        id?: string | null;
+      }[]
+    | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'stats';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "TimelineBlock".
+ */
+export interface TimelineBlock {
+  title?: string | null;
+  /**
+   * Es. 19.04.2024
+   */
+  start: string;
+  /**
+   * Testo libero, non serve una data precisa. Es. primavera 2028
+   */
+  end: string;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'timeline';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "DocumentsBlock".
+ */
+export interface DocumentsBlock {
+  title?: string | null;
+  files?:
+    | {
+        label: string;
+        file: number | Media;
+        /**
+         * Facoltativo. Es. 2024. Si vede accanto al nome e serve a ordinare
+         */
+        year?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  sort?: ('entered' | 'newest' | 'oldest') | null;
+  /**
+   * Apre il file in una nuova scheda, oltre a Scarica
+   */
+  show_open?: boolean | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'documents';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "LatestNewsBlock".
+ */
+export interface LatestNewsBlock {
+  title: string;
+  count?: number | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'latest_news';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "VideoBlock".
+ */
+export interface VideoBlock {
+  title?: string | null;
+  /**
+   * Incolla il link di YouTube. Il video si carica solo dopo il clic del visitatore (GDPR).
+   */
+  url: string;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'video';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "ContactsBlock".
+ */
+export interface ContactsBlock {
+  title: string;
+  intro?: string | null;
+  /**
+   * Facoltativa. Es. il codice QR del gruppo WhatsApp
+   */
+  image?: (number | null) | Media;
+  image_caption?: string | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'contacts';
+}
+/**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "users".
  */
@@ -149,25 +461,50 @@ export interface User {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "media".
+ * via the `definition` "pages".
  */
-export interface Media {
+export interface Page {
   id: number;
+  title: string;
+  description?: string | null;
+  show_title?: boolean | null;
   /**
-   * Per le immagini: descrivi cosa si vede, per chi non può vederla. Per i documenti lascia vuoto. Per un codice QR scrivi dove porta.
+   * Mostra in fondo i link per condividere la pagina su X e Facebook
    */
-  alt?: string | null;
+  show_share?: boolean | null;
+  /**
+   * Si vede solo se nelle Impostazioni l'intestazione è «Fascia con briciole di pane»
+   */
+  header_image?: (number | null) | Media;
+  /**
+   * Componi la pagina aggiungendo e riordinando le sezioni
+   */
+  sections?:
+    | (
+        | HeroBlock
+        | TextBlock
+        | TextImageBlock
+        | CardsBlock
+        | ActivitiesBlock
+        | TeamBlock
+        | SponsorsBlock
+        | GalleryBlock
+        | CtaBlock
+        | StatsBlock
+        | TimelineBlock
+        | DocumentsBlock
+        | LatestNewsBlock
+        | VideoBlock
+        | ContactsBlock
+      )[]
+    | null;
+  /**
+   * Solo minuscole, numeri e trattini. Si sceglie alla creazione e poi resta fisso: lo può cambiare solo l'amministratore.
+   */
+  slug: string;
   updatedAt: string;
   createdAt: string;
-  url?: string | null;
-  thumbnailURL?: string | null;
-  filename?: string | null;
-  mimeType?: string | null;
-  filesize?: number | null;
-  width?: number | null;
-  height?: number | null;
-  focalX?: number | null;
-  focalY?: number | null;
+  _status?: ('draft' | 'published') | null;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -200,6 +537,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'media';
         value: number | Media;
+      } | null)
+    | ({
+        relationTo: 'pages';
+        value: number | Page;
       } | null);
   globalSlug?: string | null;
   user: {
@@ -284,6 +625,22 @@ export interface MediaSelect<T extends boolean = true> {
   height?: T;
   focalX?: T;
   focalY?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "pages_select".
+ */
+export interface PagesSelect<T extends boolean = true> {
+  title?: T;
+  description?: T;
+  show_title?: T;
+  show_share?: T;
+  header_image?: T;
+  sections?: T | {};
+  slug?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  _status?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema

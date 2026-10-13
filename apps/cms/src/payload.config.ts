@@ -10,7 +10,9 @@ import { buildConfig } from 'payload'
 import { fileURLToPath } from 'url'
 import sharp from 'sharp'
 
+import { sectionBlocks } from './blocks'
 import { Media } from './collections/Media'
+import { Pages } from './collections/Pages'
 import { Users } from './collections/Users'
 
 const filename = fileURLToPath(import.meta.url)
@@ -35,7 +37,9 @@ export default buildConfig({
       baseDir: path.resolve(dirname),
     },
   },
-  collections: [Users, Media],
+  // I blocchi delle sezioni si definiscono qui una volta sola e si richiamano per nome (campo sections).
+  blocks: sectionBlocks,
+  collections: [Users, Media, Pages],
   editor: lexicalEditor(),
   // Pannello solo in italiano: con una sola lingua il codice caricato dal browser è più piccolo e un browser in inglese vede comunque l'italiano.
   i18n: {

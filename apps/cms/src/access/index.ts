@@ -9,6 +9,10 @@ export const anyone: Access = () => true
 /** Qualunque utente con account: amministratore o editor. */
 export const isStaff: Access = ({ req }) => Boolean(req.user)
 
+/** Chi ha un account vede tutto, bozze incluse; gli altri solo i documenti pubblicati. */
+export const publishedOrStaff: Access = ({ req }) =>
+  req.user ? true : { _status: { equals: 'published' } }
+
 /** Solo l'amministratore. */
 export const isAdmin: Access = ({ req }) => req.user?.role === 'admin'
 
