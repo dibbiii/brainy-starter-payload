@@ -11,6 +11,23 @@ import { Users } from './collections/Users'
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
 
+// Tutte le variabili stanno in un unico .env alla radice del repository, lo stesso
+// che legge Docker Compose. I comandi partono da apps/cms, quindi la radice è due
+// livelli sopra. Le variabili già presenti nell'ambiente non vengono sovrascritte;
+// se il file manca (es. in hosting) si usano quelle della piattaforma.
+try {
+  process.loadEnvFile(path.resolve(process.cwd(), '../../.env'))
+} catch {
+  // nessun .env: valgono le variabili d'ambiente già impostate
+}
+
+// DATABASE_URL, se presente, ha la precedenza (database esterno); altrimenti
+// l'indirizzo si ricava dalle stesse variabili DB_* usate da Compose.
+const { DB_USER = '', DB_PASSWORD = '', DB_NAME = '', DB_PORT = '5433' } = process.env
+const databaseUrl =
+  process.env.DATABASE_URL ||
+  `postgres://${encodeURIComponent(DB_USER)}:${encodeURIComponent(DB_PASSWORD)}@localhost:${DB_PORT}/${encodeURIComponent(DB_NAME)}`
+
 // Il push di Drizzle crea le tabelle da solo: va bene per prototipare in locale,
 // non per i database dei clienti, che usano le migrazioni. Resta spento se non
 // viene chiesto esplicitamente e non parte mai in produzione.
@@ -30,7 +47,7 @@ export default buildConfig({
     outputFile: path.resolve(dirname, 'payload-types.ts'),
   },
   db: postgresAdapter({
-    pool: { connectionString: process.env.DATABASE_URL || '' },
+    pool: { connectionString: databaseUrl },
     push: pushAbilitato,
   }),
   sharp,

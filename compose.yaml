@@ -1,0 +1,27 @@
+# PostgreSQL locale per lo sviluppo e per le verifiche.
+# Le variabili vengono da .env (generato da `npm run init`, non va in Git).
+# Il nome del progetto separa contenitori e volumi tra copie diverse della base.
+name: "${COMPOSE_PROJECT_NAME:?COMPOSE_PROJECT_NAME mancante, esegui npm run init}"
+
+services:
+  db:
+    image: postgres:18-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${DB_USER:?DB_USER mancante}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:?DB_PASSWORD mancante}
+      POSTGRES_DB: ${DB_NAME:?DB_NAME mancante}
+    ports:
+      # Solo localhost: il database non è raggiungibile dalla rete.
+      - "127.0.0.1:${DB_PORT:-5433}:5432"
+    volumes:
+      # PostgreSQL 18 vuole il volume in /var/lib/postgresql (non più in .../data).
+      - db-data:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+volumes:
+  db-data:
