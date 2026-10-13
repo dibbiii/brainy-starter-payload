@@ -9,7 +9,12 @@
     "packages/*"
   ],
   "scripts": {
+    "init": "node scripts/init.mjs",
     "dev": "npm run dev -w apps/site",
+    "dev:site": "npm run dev -w apps/site",
+    "dev:cms": "npm run dev -w apps/cms",
+    "dev:all": "concurrently --kill-others-on-fail -n sito,cms -c cyan,magenta \"npm:dev:site\" \"npm:dev:cms\"",
+    "start:cms": "npm run start -w apps/cms",
     "build": "npm run build -w apps/site",
     "preview": "npm run preview -w apps/site",
     "check": "npm run check -w apps/site",
@@ -21,5 +26,8 @@
     "esbuild@0.28.2": true,
     "esbuild@0.25.12": true,
     "esbuild@0.18.20": true
+  },
+  "devDependencies": {
+    "concurrently": "^10.0.6"
   }
 }
