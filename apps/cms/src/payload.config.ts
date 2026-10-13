@@ -1,5 +1,9 @@
+// Per primo: carica il .env prima che gli altri file leggano process.env.
+import './env'
+
 import { postgresAdapter } from '@payloadcms/db-postgres'
 import { lexicalEditor } from '@payloadcms/richtext-lexical'
+import { it } from '@payloadcms/translations/languages/it'
 import path from 'path'
 import { buildConfig } from 'payload'
 import { fileURLToPath } from 'url'
@@ -10,16 +14,6 @@ import { Users } from './collections/Users'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
-
-// Tutte le variabili stanno in un unico .env alla radice del repository, lo stesso
-// che legge Docker Compose. I comandi partono da apps/cms, quindi la radice è due
-// livelli sopra. Le variabili già presenti nell'ambiente non vengono sovrascritte;
-// se il file manca (es. in hosting) si usano quelle della piattaforma.
-try {
-  process.loadEnvFile(path.resolve(process.cwd(), '../../.env'))
-} catch {
-  // nessun .env: valgono le variabili d'ambiente già impostate
-}
 
 // DATABASE_URL, se presente, ha la precedenza (database esterno); altrimenti
 // l'indirizzo si ricava dalle stesse variabili DB_* usate da Compose.
@@ -42,6 +36,11 @@ export default buildConfig({
   },
   collections: [Users, Media],
   editor: lexicalEditor(),
+  // Pannello solo in italiano: con una sola lingua il codice caricato dal browser è più piccolo e un browser in inglese vede comunque l'italiano.
+  i18n: {
+    supportedLanguages: { it },
+    fallbackLanguage: 'it',
+  },
   secret: process.env.PAYLOAD_SECRET || '',
   typescript: {
     outputFile: path.resolve(dirname, 'payload-types.ts'),

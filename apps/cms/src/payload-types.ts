@@ -123,6 +123,10 @@ export interface UserAuthOperations {
  */
 export interface User {
   id: number;
+  /**
+   * L'amministratore gestisce tutto, inclusi utenti e aspetto. L'editor gestisce contenuti, media, dati del sito, menu e sponsor.
+   */
+  role: 'admin' | 'editor';
   updatedAt: string;
   createdAt: string;
   email: string;
@@ -149,7 +153,10 @@ export interface User {
  */
 export interface Media {
   id: number;
-  alt: string;
+  /**
+   * Per le immagini: descrivi cosa si vede, per chi non può vederla. Per i documenti lascia vuoto. Per un codice QR scrivi dove porta.
+   */
+  alt?: string | null;
   updatedAt: string;
   createdAt: string;
   url?: string | null;
@@ -241,6 +248,7 @@ export interface PayloadMigration {
  * via the `definition` "users_select".
  */
 export interface UsersSelect<T extends boolean = true> {
+  role?: T;
   updatedAt?: T;
   createdAt?: T;
   email?: T;
