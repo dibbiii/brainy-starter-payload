@@ -13,6 +13,7 @@ export const Cards: Block = {
       name: 'items',
       label: 'Schede',
       type: 'array',
+      labels: { singular: 'Scheda', plural: 'Schede' },
       fields: [
         title(true),
         {

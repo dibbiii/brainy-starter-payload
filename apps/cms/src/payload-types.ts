@@ -111,8 +111,18 @@ export interface Config {
     defaultIDType: number;
   };
   fallbackLocale: ('false' | 'none' | 'null') | false | null | ('it' | 'en' | 'de') | ('it' | 'en' | 'de')[];
-  globals: {};
-  globalsSelect: {};
+  globals: {
+    site: Site;
+    theme: Theme;
+    menu: Menu;
+    sponsors: Sponsor;
+  };
+  globalsSelect: {
+    site: SiteSelect<false> | SiteSelect<true>;
+    theme: ThemeSelect<false> | ThemeSelect<true>;
+    menu: MenuSelect<false> | MenuSelect<true>;
+    sponsors: SponsorsSelect<false> | SponsorsSelect<true>;
+  };
   locale: 'it' | 'en' | 'de';
   widgets: {
     collections: CollectionsWidget;
@@ -883,6 +893,296 @@ export interface PayloadMigrationsSelect<T extends boolean = true> {
   batch?: T;
   updatedAt?: T;
   createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "site".
+ */
+export interface Site {
+  id: number;
+  name: string;
+  tagline?: string | null;
+  /**
+   * Es. https://www.esempio.it — serve per sitemap e condivisioni
+   */
+  url: string;
+  logo?: (number | null) | Media;
+  /**
+   * Se spento, con il logo caricato si vede solo il logo
+   */
+  show_name_with_logo?: boolean | null;
+  /**
+   * Riga piccola sotto il nome. Es. ASD · Ziano di Fiemme
+   */
+  header_subtitle?: string | null;
+  /**
+   * Es. Tesseramento. Compare solo se compili anche il link
+   */
+  header_button_label?: string | null;
+  header_button_url?: string | null;
+  /**
+   * Vale per tutte le pagine tranne la home. La fascia mostra briciole di pane, titolo, descrizione e, se caricata, un'immagine.
+   */
+  page_header_style?: ('simple' | 'band') | null;
+  og_image?: (number | null) | Media;
+  email?: string | null;
+  phone?: string | null;
+  address?: string | null;
+  tax_id?: string | null;
+  socials?:
+    | {
+        platform: 'Facebook' | 'Instagram' | 'YouTube' | 'Strava' | 'LinkedIn' | 'TikTok' | 'Altro';
+        url: string;
+        id?: string | null;
+      }[]
+    | null;
+  privacy_url: string;
+  footer_note?: string | null;
+  /**
+   * Versione chiara del logo, perché il fondo è scuro. Se vuoto si vede il nome del sito
+   */
+  footer_logo?: (number | null) | Media;
+  footer_columns?:
+    | {
+        title: string;
+        /**
+         * Dopo i link scritti a mano, aggiunge in automatico tutte le attività
+         */
+        from_activities?: boolean | null;
+        links?:
+          | {
+              label: string;
+              url: string;
+              id?: string | null;
+            }[]
+          | null;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Es. Discipline, Gare, Corsi. Compare nelle briciole di pane e nei titoli
+   */
+  activities_label?: string | null;
+  /**
+   * Es. discipline → le pagine saranno /discipline/nome. Solo minuscole e trattini
+   */
+  activities_path?: string | null;
+  /**
+   * Sotto ogni pagina di dettaglio. Es. Altre discipline / Altri corsi
+   */
+  activities_more_title?: string | null;
+  /**
+   * Es. Tutte le discipline / Tutti i corsi
+   */
+  activities_all_label?: string | null;
+  /**
+   * In fondo alle pagine che nel menu stanno dentro un sottomenu (es. La società), mostra le altre pagine di quel sottomenu
+   */
+  show_section_nav?: boolean | null;
+  /**
+   * Link per condividere su X e Facebook, senza script né cookie. Per le pagine normali si attiva pagina per pagina
+   */
+  show_share_links?: boolean | null;
+  /**
+   * Nell'elenco la news più recente appare grande, in cima
+   */
+  news_featured?: boolean | null;
+  /**
+   * Nella pagina di una news mostra a fianco le altre news
+   */
+  news_sidebar?: boolean | null;
+  /**
+   * Facoltativo, si vede solo con la colonna laterale. Es. Tesseramento
+   */
+  news_box_title?: string | null;
+  news_box_text?: string | null;
+  news_box_button_label?: string | null;
+  news_box_button_url?: string | null;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "theme".
+ */
+export interface Theme {
+  id: number;
+  primary: string;
+  accent: string;
+  ink: string;
+  paper: string;
+  heading_font: 'barlow' | 'archivo' | 'fraunces' | 'source_serif';
+  body_font: 'source' | 'atkinson' | 'lora';
+  corners: 'square' | 'soft';
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "menu".
+ */
+export interface Menu {
+  id: number;
+  items?:
+    | {
+        label: string;
+        /**
+         * Es. /chi-siamo oppure https://… Lascia vuoto se la voce ha solo un sottomenu
+         */
+        url?: string | null;
+        /**
+         * Aggiunge in automatico, sotto questa voce, tutte le attività (discipline, gare, corsi…)
+         */
+        activities_submenu?: boolean | null;
+        children?:
+          | {
+              label: string;
+              url: string;
+              id?: string | null;
+            }[]
+          | null;
+        id?: string | null;
+      }[]
+    | null;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "sponsors".
+ */
+export interface Sponsor {
+  id: number;
+  items?:
+    | {
+        name: string;
+        logo?: (number | null) | Media;
+        url?: string | null;
+        tier: 'main' | 'partner' | 'institutional';
+        id?: string | null;
+      }[]
+    | null;
+  show_in_footer?: boolean | null;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "site_select".
+ */
+export interface SiteSelect<T extends boolean = true> {
+  name?: T;
+  tagline?: T;
+  url?: T;
+  logo?: T;
+  show_name_with_logo?: T;
+  header_subtitle?: T;
+  header_button_label?: T;
+  header_button_url?: T;
+  page_header_style?: T;
+  og_image?: T;
+  email?: T;
+  phone?: T;
+  address?: T;
+  tax_id?: T;
+  socials?:
+    | T
+    | {
+        platform?: T;
+        url?: T;
+        id?: T;
+      };
+  privacy_url?: T;
+  footer_note?: T;
+  footer_logo?: T;
+  footer_columns?:
+    | T
+    | {
+        title?: T;
+        from_activities?: T;
+        links?:
+          | T
+          | {
+              label?: T;
+              url?: T;
+              id?: T;
+            };
+        id?: T;
+      };
+  activities_label?: T;
+  activities_path?: T;
+  activities_more_title?: T;
+  activities_all_label?: T;
+  show_section_nav?: T;
+  show_share_links?: T;
+  news_featured?: T;
+  news_sidebar?: T;
+  news_box_title?: T;
+  news_box_text?: T;
+  news_box_button_label?: T;
+  news_box_button_url?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "theme_select".
+ */
+export interface ThemeSelect<T extends boolean = true> {
+  primary?: T;
+  accent?: T;
+  ink?: T;
+  paper?: T;
+  heading_font?: T;
+  body_font?: T;
+  corners?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "menu_select".
+ */
+export interface MenuSelect<T extends boolean = true> {
+  items?:
+    | T
+    | {
+        label?: T;
+        url?: T;
+        activities_submenu?: T;
+        children?:
+          | T
+          | {
+              label?: T;
+              url?: T;
+              id?: T;
+            };
+        id?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "sponsors_select".
+ */
+export interface SponsorsSelect<T extends boolean = true> {
+  items?:
+    | T
+    | {
+        name?: T;
+        logo?: T;
+        url?: T;
+        tier?: T;
+        id?: T;
+      };
+  show_in_footer?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema

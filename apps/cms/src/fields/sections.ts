@@ -8,6 +8,7 @@ export const sectionsField: BlocksField = {
   name: 'sections',
   label: 'Sezioni',
   type: 'blocks',
+  labels: { singular: 'Sezione', plural: 'Sezioni' },
   // I nomi sono quelli dei blocchi qui sopra; il tipo preciso (BlockSlug) lo genera Payload.
   blockReferences: sectionBlocks.map((block) => block.slug as BlockSlug),
   blocks: [],

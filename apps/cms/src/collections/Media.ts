@@ -10,7 +10,7 @@ const mediaDir = path.resolve(rootDir, process.env.MEDIA_DIR || 'media')
 export const Media: CollectionConfig = {
   slug: 'media',
   labels: { singular: 'File', plural: 'Media' },
-  admin: { useAsTitle: 'filename' },
+  admin: { useAsTitle: 'filename', group: 'Contenuti' },
   access: {
     // I file sono pubblici (le pagine del sito li mostrano); li gestisce solo chi ha un account.
     read: anyone,

@@ -12,6 +12,7 @@ export const Gallery: Block = {
       name: 'images',
       label: 'Foto',
       type: 'array',
+      labels: { singular: 'Foto', plural: 'Foto' },
       fields: [
         { name: 'image', label: 'Foto', type: 'upload', relationTo: 'media', required: true },
         { name: 'caption', label: 'Didascalia', type: 'text', localized: true },

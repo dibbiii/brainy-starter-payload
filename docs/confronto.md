@@ -33,7 +33,15 @@ Stato al 13 ottobre 2026. La base Sveltia è quella al tag `sveltia-final` del r
   il tipo di blocco. Da verificare nel pannello.
 - **Selettore di colore.** Sveltia ha il widget `color`. Payload non ha un campo colore
   nativo: la documentazione consiglia un campo di testo con validazione e un componente
-  personalizzato. Da fare per le Impostazioni → Aspetto.
+  personalizzato. Fatto: `components/ColorField.tsx` (selettore del browser più codice
+  esadecimale) e `fields/colore.ts` (validazione `#rrggbb`); il componente va registrato
+  nella mappa `importMap.js`, un file generato. Provato nel pannello: si disegna bene e il
+  valore si salva. Costo: un componente React e un file generato in più da mantenere.
+- **Permessi sulle Impostazioni.** L'aspetto lo modifica solo l'amministratore; dati del
+  sito, menu e sponsor anche l'editor. Lettura pubblica per tutte. Verificato.
+- **Etichette delle righe.** I campi `array` e `blocks` mostrano «Aggiungi Item» e
+  «Aggiungi Section» in inglese finché non si impostano le `labels` (singolare e plurale)
+  su ogni campo. Corretto su tutti. Verificato nel pannello.
 - **Nomi e ordine dei campi.** Ho mantenuto in Payload gli stessi nomi dei campi della base
   (`button_label`, `show_managers`…) per riusare i componenti Astro. Payload preferirebbe
   `camelCase`.
@@ -110,10 +118,30 @@ testo italiano. La traduzione è **manuale** (nessuna traduzione automatica per 
 - **Windows.** Su Git Bash i percorsi Linux nei comandi Docker vengono convertiti in percorsi
   Windows (serve `MSYS_NO_PATHCONV=1`); i file della base hanno fine riga CRLF.
 
-## 5. Ancora da misurare
+## 5. Il pannello in uso (provato nel browser il 13 ottobre 2026)
+
+- **Cambio lingua.** Il selettore «Locale» è in alto a destra (Italiano, English, Deutsch).
+  Cambiando lingua il modulo mostra i testi di quella lingua: i campi tradotti hanno il
+  suffisso «— English» e, se non tradotti, sono **vuoti**; non c'è il testo italiano da
+  guardare nella stessa schermata, quindi chi traduce passa avanti e indietro. I campi comuni
+  (immagini, link, opzioni) restano uguali e non vanno rifatti.
+- **Titolo vuoto.** Se il titolo non è tradotto, l'intestazione della pagina mostra l'id
+  del documento («1») al posto del titolo.
+- **Righe dei blocchi.** Ogni sezione si presenta come «01 Copertina — Senza titolo»: manca
+  il riassunto che Sveltia mostra (il titolo della sezione). Confermato.
+- **Righe fuori schermo.** Le righe di un array lontane dalla parte visibile (es. «Numeri»)
+  vengono disegnate solo quando ci si avvicina scorrendo: all'inizio appaiono vuote. Non è un
+  difetto della nostra configurazione. Verificato.
+- **Lingua dell'interfaccia.** Quasi tutto è in italiano (menu, pulsanti, «Salva Bozza»,
+  «Pubblica modifiche», «Versioni»). Eccezione vista: la voce «Log out» del menu.
+- **Menu laterale.** Raggruppato come da configurazione: Contenuti, Impostazioni,
+  Amministrazione.
+
+## 6. Ancora da misurare
 
 - Tempo di setup di un nuovo cliente con i due strumenti.
-- Esperienza d'uso del pannello nel browser (selettore di lingua, riassunti dei blocchi,
-  campo colore, caricamento file): finora provate solo le API.
+- Esperienza d'uso del pannello da parte di un editor non tecnico (qui provato solo da noi).
+  Ancora da guardare: caricamento dei file dal pannello, blocchi di tipo testo con link,
+  bozze e pubblicazione.
 - Costi e complessità di hosting di Payload (server, database, backup), rinviati.
 - Aggiornamento del sito dopo una modifica: comando manuale oggi, webhook in seguito.

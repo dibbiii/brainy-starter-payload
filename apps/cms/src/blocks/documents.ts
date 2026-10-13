@@ -14,6 +14,7 @@ export const Documents: Block = {
       name: 'files',
       label: 'File',
       type: 'array',
+      labels: { singular: 'Documento', plural: 'Documenti' },
       fields: [
         { name: 'label', label: 'Nome', type: 'text', required: true, localized: true, validate: obbligatorioTesto },
         {

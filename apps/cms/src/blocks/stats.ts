@@ -24,6 +24,7 @@ export const Stats: Block = {
       name: 'items',
       label: 'Numeri',
       type: 'array',
+      labels: { singular: 'Numero', plural: 'Numeri' },
       minRows: 2,
       maxRows: 4,
       fields: [

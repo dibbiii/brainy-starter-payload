@@ -58,6 +58,7 @@ export const News: CollectionConfig = {
       name: 'attachments',
       label: 'Allegati',
       type: 'array',
+      labels: { singular: 'Allegato', plural: 'Allegati' },
       fields: [
         {
           name: 'label',

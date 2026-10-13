@@ -17,6 +17,10 @@ import { News } from './collections/News'
 import { Pages } from './collections/Pages'
 import { Team } from './collections/Team'
 import { Users } from './collections/Users'
+import { Menu } from './globals/Menu'
+import { Site } from './globals/Site'
+import { Sponsors } from './globals/Sponsors'
+import { Theme } from './globals/Theme'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -43,6 +47,7 @@ export default buildConfig({
   // I blocchi delle sezioni si definiscono qui una volta sola e si richiamano per nome (campo sections).
   blocks: sectionBlocks,
   collections: [Users, Media, Pages, Activities, Team, News],
+  globals: [Site, Theme, Menu, Sponsors],
   editor: lexicalEditor(),
   // Pannello solo in italiano: con una sola lingua il codice caricato dal browser è più piccolo e un browser in inglese vede comunque l'italiano.
   i18n: {
