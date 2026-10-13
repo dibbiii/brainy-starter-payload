@@ -1,6 +1,7 @@
 // Per primo: carica il .env prima che gli altri file leggano process.env.
 import './env'
 
+import { defaultLocale, locales } from '@brainy/content'
 import { postgresAdapter } from '@payloadcms/db-postgres'
 import { lexicalEditor } from '@payloadcms/richtext-lexical'
 import { it } from '@payloadcms/translations/languages/it'
@@ -40,6 +41,12 @@ export default buildConfig({
   i18n: {
     supportedLanguages: { it },
     fallbackLanguage: 'it',
+  },
+  // Lingue dei contenuti (l'elenco è condiviso con il sito). Se una traduzione manca, Payload restituisce il testo della lingua predefinita.
+  localization: {
+    locales: locales.map(({ code, label }) => ({ code, label })),
+    defaultLocale,
+    fallback: true,
   },
   secret: process.env.PAYLOAD_SECRET || '',
   typescript: {

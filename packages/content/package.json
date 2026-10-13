@@ -1,0 +1,10 @@
+{
+  "name": "@brainy/content",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Elenco delle lingue, tipi e validazione dei dati condivisi tra CMS e sito",
+  "exports": {
+    ".": "./src/index.ts"
+  }
+}

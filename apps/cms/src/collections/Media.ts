@@ -42,6 +42,7 @@ export const Media: CollectionConfig = {
       name: 'alt',
       label: 'Testo alternativo',
       type: 'text',
+      localized: true,
       admin: {
         description:
           "Per le immagini: descrivi cosa si vede, per chi non può vederla. Per i documenti lascia vuoto. Per un codice QR scrivi dove porta.",

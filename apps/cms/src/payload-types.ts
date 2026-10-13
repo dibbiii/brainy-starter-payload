@@ -86,10 +86,10 @@ export interface Config {
   db: {
     defaultIDType: number;
   };
-  fallbackLocale: null;
+  fallbackLocale: ('false' | 'none' | 'null') | false | null | ('it' | 'en' | 'de') | ('it' | 'en' | 'de')[];
   globals: {};
   globalsSelect: {};
-  locale: null;
+  locale: 'it' | 'en' | 'de';
   widgets: {
     collections: CollectionsWidget;
   };

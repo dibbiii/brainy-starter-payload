@@ -7,6 +7,8 @@ const __filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(__filename)
 
 const nextConfig: NextConfig = {
+  // Il pacchetto condiviso è TypeScript non compilato: Next lo deve compilare lui.
+  transpilePackages: ['@brainy/content'],
   images: {
     localPatterns: [
       {
