@@ -1,0 +1,9 @@
+{
+  "items": [
+    { "label": "Home" },
+    { "label": "The society", "children": [{ "label": "The board" }, { "label": "Forms" }] },
+    { "label": "Activities" },
+    { "label": "News" },
+    { "label": "Contact" }
+  ]
+}

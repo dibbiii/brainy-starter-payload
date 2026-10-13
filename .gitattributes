@@ -1,0 +1,9 @@
+# Fine riga LF in tutto il repository (su Windows evita gli avvisi LF/CRLF e i problemi dentro Docker).
+* text=auto eol=lf
+
+# File binari: nessuna conversione.
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.pdf binary
+*.woff2 binary

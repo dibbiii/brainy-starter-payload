@@ -1,0 +1,9 @@
+{
+  "primary": "#24493d",
+  "accent": "#c62d1f",
+  "ink": "#1b2430",
+  "paper": "#f5f6f3",
+  "heading_font": "barlow",
+  "body_font": "source",
+  "corners": "square"
+}

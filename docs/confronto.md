@@ -118,6 +118,33 @@ testo italiano. La traduzione è **manuale** (nessuna traduzione automatica per 
 - **Windows.** Su Git Bash i percorsi Linux nei comandi Docker vengono convertiti in percorsi
   Windows (serve `MSYS_NO_PATHCONV=1`); i file della base hanno fine riga CRLF.
 
+## 4 bis. Il seed dimostrativo
+
+I contenuti di esempio della base stanno in `seed/` (file Markdown con intestazione YAML, JSON
+delle impostazioni, media) e si caricano con `npm run seed`. Le traduzioni demo seguono la
+stessa convenzione di Sveltia per i file multilingua (`home.md`, `home.en.md`, `home.de.md`).
+
+- **Sveltia: i contenuti sono già i file.** Il «seed» è il repository stesso. **Payload:** i
+  contenuti stanno nel database, quindi serve uno script che li carichi, con le sue regole di
+  conversione e di idempotenza (circa 300 righe di codice da mantenere).
+- **Markdown → testo formattato.** Funziona con l'utility ufficiale, ma le email nude non
+  diventano link (in Sveltia le converte `marked`): lo script le trasforma. Gli elenchi
+  annidati con due spazi di rientro perdono il livello (non servono ai contenuti di esempio;
+  serviranno all'importazione di Cauriol). Verificato.
+- **PDF di esempio.** Payload rifiuta i PDF senza tabella `xref` negli ultimi 1024 byte
+  («Invalid PDF file»): il PDF minimo della base non passava ed è stato sostituito con uno
+  valido. Un controllo utile, ma ha fermato il primo lancio. Verificato.
+- **Tradurre in blocco.** Per ogni elemento si crea la versione italiana e poi, per ogni
+  lingua, si rilegge il documento, si sovrappongono i testi tradotti e si rimanda tutta la
+  struttura (una richiesta con soli testi cancellerebbe immagini e link). Verificato.
+- **Ripetibile.** Un secondo lancio non crea né modifica nulla; dopo modifiche dell'editor e
+  l'eliminazione di una news, il terzo lancio ricrea solo la news mancante e lascia intatto il
+  resto. Un elemento si riconosce dallo slug e, se esiste, viene saltato per intero (anche le
+  sue traduzioni). Le Impostazioni si ricompilano solo se sono vuote: chi svuota di proposito
+  gli sponsor e rilancia il seed li riavrebbe indietro. Verificato.
+- **Nessun utente demo.** Lo script non crea utenti: il primo amministratore si crea dal
+  pannello. Si rifiuta di partire con `NODE_ENV=production` senza `--forza`. Verificato.
+
 ## 5. Il pannello in uso (provato nel browser il 13 ottobre 2026)
 
 - **Cambio lingua.** Il selettore «Locale» è in alto a destra (Italiano, English, Deutsch).

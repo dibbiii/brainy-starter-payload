@@ -1,0 +1,35 @@
+{
+  "items": [
+    {
+      "label": "Home",
+      "url": "/"
+    },
+    {
+      "label": "La società",
+      "url": "/la-societa",
+      "children": [
+        {
+          "label": "Il direttivo",
+          "url": "/la-societa#team"
+        },
+        {
+          "label": "Modulistica",
+          "url": "/la-societa#documenti"
+        }
+      ]
+    },
+    {
+      "label": "Attività",
+      "url": "/attivita",
+      "activities_submenu": true
+    },
+    {
+      "label": "News",
+      "url": "/news"
+    },
+    {
+      "label": "Contatti",
+      "url": "/contatti"
+    }
+  ]
+}

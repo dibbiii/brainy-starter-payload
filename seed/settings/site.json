@@ -1,0 +1,32 @@
+{
+  "name": "ASD Monte Esempio",
+  "tagline": "Sport in montagna per tutte le età",
+  "url": "https://www.esempio.it",
+  "logo": "",
+  "page_header_style": "simple",
+  "og_image": "/uploads/montagna.svg",
+  "email": "info@esempio.it",
+  "phone": "+39 0462 000000",
+  "address": "Via delle Malghe 1\n38033 Cavalese (TN)",
+  "tax_id": "C.F. 00000000000",
+  "socials": [
+    {
+      "platform": "Facebook",
+      "url": "https://www.facebook.com/"
+    },
+    {
+      "platform": "Instagram",
+      "url": "https://www.instagram.com/"
+    }
+  ],
+  "privacy_url": "/privacy",
+  "footer_note": "Associazione sportiva dilettantistica affiliata FISI.",
+  "activities_label": "Attività",
+  "activities_path": "attivita",
+  "activities_more_title": "Altre attività",
+  "activities_all_label": "Tutte le attività",
+  "news_featured": false,
+  "news_sidebar": false,
+  "show_section_nav": false,
+  "show_share_links": false
+}

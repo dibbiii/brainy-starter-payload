@@ -1,0 +1,17 @@
+{
+  "sentiero.svg": {
+    "it": "Un sentiero di montagna con un segnavia bianco e rosso",
+    "en": "A mountain trail with a white and red waymark",
+    "de": "Ein Bergpfad mit einer weiß-roten Wegmarkierung"
+  },
+  "montagna.svg": {
+    "it": "Montagne innevate",
+    "en": "Snow-covered mountains",
+    "de": "Schneebedeckte Berge"
+  },
+  "neve.svg": {
+    "it": "Pista di sci di fondo innevata",
+    "en": "Snow-covered cross-country ski trail",
+    "de": "Verschneite Langlaufloipe"
+  }
+}

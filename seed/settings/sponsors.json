@@ -1,0 +1,9 @@
+{
+  "items": [
+    { "name": "Cassa Rurale Esempio", "logo": "", "url": "https://www.esempio.it", "tier": "main" },
+    { "name": "Comune di Esempio", "logo": "", "url": "https://www.esempio.it", "tier": "institutional" },
+    { "name": "Sport Montagna", "logo": "", "url": "", "tier": "partner" },
+    { "name": "Panificio Alpino", "logo": "", "url": "", "tier": "partner" }
+  ],
+  "show_in_footer": true
+}

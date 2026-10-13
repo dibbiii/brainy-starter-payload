@@ -1,0 +1,9 @@
+{
+  "items": [
+    { "label": "Startseite" },
+    { "label": "Der Verein", "children": [{ "label": "Der Vorstand" }, { "label": "Formulare" }] },
+    { "label": "Aktivitäten" },
+    { "label": "Neuigkeiten" },
+    { "label": "Kontakt" }
+  ]
+}
