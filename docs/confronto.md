@@ -37,6 +37,22 @@ Stato al 13 ottobre 2026. La base Sveltia è quella al tag `sveltia-final` del r
 - **Nomi e ordine dei campi.** Ho mantenuto in Payload gli stessi nomi dei campi della base
   (`button_label`, `show_managers`…) per riusare i componenti Astro. Payload preferirebbe
   `camelCase`.
+- **Bozze al posto del campo `draft`.** Le news della base avevano una casella «Bozza»;
+  in Payload le bozze sono native per News, Pagine e Attività. Team e impostazioni si salvano
+  direttamente, senza bozze. Verificato.
+- **Relazioni.** Responsabili delle attività e attività collegata alle news sono relazioni
+  native: eliminando una persona o un'attività il collegamento sparisce da solo, come in
+  Sveltia. Con `depth=1` l'API restituisce i documenti collegati già popolati, utile per lo
+  snapshot del sito. Verificato.
+- **Nome e ruolo nell'elenco dei responsabili.** Sveltia mostra «Nome — Ruolo»; Payload mostra
+  solo il titolo del documento (il nome). Si può migliorare con un campo calcolato.
+  Da verificare nel pannello.
+- **Slug delle news.** Stesso formato della base (`2026-05-20-titolo`): la data viene dal
+  campo «Data» o, se manca, da quella di oggi. Verificato.
+- **Ordinamento.** `defaultSort` ordina Team e Attività per «ordine» e poi per nome, le news
+  dalla più recente. Verificato.
+- **Email.** In Payload il campo è di tipo `email` (valida il formato); in Sveltia era una
+  stringa libera. Verificato.
 - **Valori predefiniti per lingua.** Payload accetta una funzione che riceve la lingua:
   i titoli "Ultime news" e "Contatti" si precompilano nella lingua giusta. Verificato.
 

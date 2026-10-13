@@ -86,6 +86,9 @@ export interface Config {
     users: User;
     media: Media;
     pages: Page;
+    activities: Activity;
+    team: Team;
+    news: News;
     'payload-kv': PayloadKv;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
@@ -96,6 +99,9 @@ export interface Config {
     users: UsersSelect<false> | UsersSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
     pages: PagesSelect<false> | PagesSelect<true>;
+    activities: ActivitiesSelect<false> | ActivitiesSelect<true>;
+    team: TeamSelect<false> | TeamSelect<true>;
+    news: NewsSelect<false> | NewsSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
@@ -136,7 +142,8 @@ export interface UserAuthOperations {
   };
 }
 /**
- * This interface was referenced by `Config`'s JSON-Schema via the `definition` "HeroBlock".
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "HeroBlock".
  */
 export interface HeroBlock {
   title: string;
@@ -150,7 +157,8 @@ export interface HeroBlock {
   blockType: 'hero';
 }
 /**
- * This interface was referenced by `Config`'s JSON-Schema via the `definition` "media".
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "media".
  */
 export interface Media {
   id: number;
@@ -171,7 +179,8 @@ export interface Media {
   focalY?: number | null;
 }
 /**
- * This interface was referenced by `Config`'s JSON-Schema via the `definition` "TextBlock".
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "TextBlock".
  */
 export interface TextBlock {
   title?: string | null;
@@ -508,6 +517,132 @@ export interface Page {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "activities".
+ */
+export interface Activity {
+  id: number;
+  title: string;
+  /**
+   * Compare in cima alla pagina e nei motori di ricerca
+   */
+  description?: string | null;
+  /**
+   * Scheda nell'elenco e immagine in cima alla pagina
+   */
+  image?: (number | null) | Media;
+  /**
+   * Persone dell'elenco Team. Se una persona viene eliminata, sparisce da qui
+   */
+  managers?: (number | Team)[] | null;
+  /**
+   * Numero piccolo = prima. A parità di numero, in ordine alfabetico
+   */
+  order?: number | null;
+  /**
+   * Componi la pagina aggiungendo e riordinando le sezioni
+   */
+  sections?:
+    | (
+        | HeroBlock
+        | TextBlock
+        | TextImageBlock
+        | CardsBlock
+        | ActivitiesBlock
+        | TeamBlock
+        | SponsorsBlock
+        | GalleryBlock
+        | CtaBlock
+        | StatsBlock
+        | TimelineBlock
+        | DocumentsBlock
+        | LatestNewsBlock
+        | VideoBlock
+        | ContactsBlock
+      )[]
+    | null;
+  /**
+   * Solo minuscole, numeri e trattini. Si sceglie alla creazione e poi resta fisso: lo può cambiare solo l'amministratore.
+   */
+  slug: string;
+  updatedAt: string;
+  createdAt: string;
+  _status?: ('draft' | 'published') | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "team".
+ */
+export interface Team {
+  id: number;
+  name: string;
+  role: string;
+  photo?: (number | null) | Media;
+  email?: string | null;
+  bio?: string | null;
+  /**
+   * Facoltativo. Serve a mostrare gruppi diversi in sezioni diverse. Es. Cariche, Responsabili di settore
+   */
+  group?: string | null;
+  /**
+   * Numero piccolo = prima. A parità di numero, in ordine alfabetico
+   */
+  order?: number | null;
+  /**
+   * Solo minuscole, numeri e trattini. Si sceglie alla creazione e poi resta fisso: lo può cambiare solo l'amministratore.
+   */
+  slug: string;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "news".
+ */
+export interface News {
+  id: number;
+  title: string;
+  date: string;
+  /**
+   * Due righe che compaiono nell'elenco news e nei motori di ricerca
+   */
+  excerpt?: string | null;
+  cover?: (number | null) | Media;
+  attachments?:
+    | {
+        label: string;
+        file: number | Media;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Facoltativo: la news comparirà anche nella pagina di quell'attività
+   */
+  activity?: (number | null) | Activity;
+  body: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  };
+  /**
+   * Solo minuscole, numeri e trattini. Si sceglie alla creazione e poi resta fisso: lo può cambiare solo l'amministratore.
+   */
+  slug: string;
+  updatedAt: string;
+  createdAt: string;
+  _status?: ('draft' | 'published') | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-kv".
  */
 export interface PayloadKv {
@@ -541,6 +676,18 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'pages';
         value: number | Page;
+      } | null)
+    | ({
+        relationTo: 'activities';
+        value: number | Activity;
+      } | null)
+    | ({
+        relationTo: 'team';
+        value: number | Team;
+      } | null)
+    | ({
+        relationTo: 'news';
+        value: number | News;
       } | null);
   globalSlug?: string | null;
   user: {
@@ -637,6 +784,61 @@ export interface PagesSelect<T extends boolean = true> {
   show_share?: T;
   header_image?: T;
   sections?: T | {};
+  slug?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  _status?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "activities_select".
+ */
+export interface ActivitiesSelect<T extends boolean = true> {
+  title?: T;
+  description?: T;
+  image?: T;
+  managers?: T;
+  order?: T;
+  sections?: T | {};
+  slug?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  _status?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "team_select".
+ */
+export interface TeamSelect<T extends boolean = true> {
+  name?: T;
+  role?: T;
+  photo?: T;
+  email?: T;
+  bio?: T;
+  group?: T;
+  order?: T;
+  slug?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "news_select".
+ */
+export interface NewsSelect<T extends boolean = true> {
+  title?: T;
+  date?: T;
+  excerpt?: T;
+  cover?: T;
+  attachments?:
+    | T
+    | {
+        label?: T;
+        file?: T;
+        id?: T;
+      };
+  activity?: T;
+  body?: T;
   slug?: T;
   updatedAt?: T;
   createdAt?: T;

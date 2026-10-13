@@ -56,6 +56,6 @@ export const Pages: CollectionConfig = {
       },
     },
     sectionsField,
-    slugField,
+    slugField(),
   ],
 }
