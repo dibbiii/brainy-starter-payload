@@ -15,8 +15,9 @@ Legenda: [P] da riportare anche nella base Sveltia (e poi in Cauriol), [V] solo 
 - [x] Galleria: link con nome accessibile anche senza didascalia
 - [x] Avviso in build se il contrasto dei colori del tema è insufficiente
 - [x] Intestazioni di sicurezza: CSP nel `<meta>`, `public/_headers`, guida per gli altri hosting
-- [ ] Riportare nella base Sveltia: patch `--relative=apps/site` + `.gitattributes` + `pattern` sui campi URL di `config.yml` + a mano `docs/intestazioni-di-sicurezza.md` e il paragrafo del README (percorso `public/_headers`)
-- [ ] Riportare in Cauriol (merge della base, build di prova)
+- [x] Riportare nella base Sveltia (branch `correzioni-sito`, senza push): patch `--relative=apps/site` + `.gitattributes` + `pattern` sui campi URL di `config.yml` + a mano `docs/intestazioni-di-sicurezza.md` e il paragrafo del README (percorso `public/_headers`)
+- [x] Riportare in Cauriol (branch `correzioni-sito`, merge della base, decorazioni senza `style=""`, build e prova nel browser)
+- [ ] Quando l'utente lo chiede: unire `correzioni-sito` in `main` e pubblicare, nella base e in Cauriol
 
 ## Fase 2 · Snapshot: rifinitura [V]
 - [ ] Segnali (Ctrl+C) e blocco orfano riconosciuto (PID)
@@ -76,6 +77,7 @@ Legenda: [P] da riportare anche nella base Sveltia (e poi in Cauriol), [V] solo 
 ## Fase 10 · Documentazione
 - [ ] README per Payload, guide `docs/` riscritte
 - [ ] `docs/confronto.md` corretto (affermazioni sbagliate, "verificato" solo con prova riproducibile)
+- [ ] In `docs/aggiungere-un-blocco.md` (anche nella base): con la CSP niente `style=""`, script inline solo tramite Astro, iframe solo da YouTube
 - [ ] Accorciare i commenti troppo lunghi scritti finora
 - [ ] Cancellare questo file
 
