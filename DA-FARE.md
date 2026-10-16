@@ -51,10 +51,10 @@ Legenda: [P] da riportare anche nella base Sveltia (e poi in Cauriol), [V] solo 
 - [x] Email nude convertite senza toccare link, autolink e codice
 
 ## Fase 5 · `init` e Docker [V]
-- [ ] Nomi PostgreSQL (accenti, `pg_`, 63 caratteri), porte anche su IPv6, `.env` con `wx` e `0600`, messaggio sul volume
-- [ ] `init`: riga `CMS_API_KEY=` vuota nel `.env` generato
-- [ ] Compose: ICU `it-IT`, healthcheck con `-h 127.0.0.1`
-- [ ] `env.ts`/`next.mjs`: solo ENOENT ignorato, `NODE_OPTIONS` aggiunto, sviluppo su 127.0.0.1
+- [x] Nomi PostgreSQL (accenti, `pg_`, cifra iniziale, 63 caratteri), porte anche su IPv6, `.env` con `wx` e `0600`, avviso sul volume esistente
+- [x] `init`: riga `CMS_API_KEY=` vuota nel `.env` generato (la riempie `chiave:snapshot`)
+- [x] Compose: ICU `it-IT` (provato l'ordinamento), healthcheck con `-h 127.0.0.1`
+- [x] `env.ts`/`next.mjs`: solo ENOENT ignorato, `NODE_OPTIONS` aggiunto, sviluppo su 127.0.0.1 (provati snapshot, curl e browser con `localhost`)
 
 ## Fase 6 · Produzione e migrazioni [V]
 - [ ] `migrationDir`, migrazione iniziale da DB mai toccato dal push, comandi `db:migrate*` e `ci`

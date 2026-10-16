@@ -11,6 +11,9 @@ services:
       POSTGRES_USER: ${DB_USER:?DB_USER mancante}
       POSTGRES_PASSWORD: ${DB_PASSWORD:?DB_PASSWORD mancante}
       POSTGRES_DB: ${DB_NAME:?DB_NAME mancante}
+      # Ordinamento italiano (ICU): accenti e maiuscole al posto giusto nell'ordine alfabetico.
+      # Vale solo alla creazione del database: su un volume esistente non cambia nulla.
+      POSTGRES_INITDB_ARGS: "--encoding=UTF8 --locale-provider=icu --icu-locale=it-IT --locale=C"
     ports:
       # Solo localhost: il database non è raggiungibile dalla rete.
       - "127.0.0.1:${DB_PORT:-5433}:5432"
@@ -18,7 +21,9 @@ services:
       # PostgreSQL 18 vuole il volume in /var/lib/postgresql (non più in .../data).
       - db-data:/var/lib/postgresql
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      # Via TCP: durante la prima inizializzazione il server provvisorio risponde solo sul socket,
+      # e senza -h sembrerebbe pronto prima del tempo.
+      test: ["CMD-SHELL", "pg_isready -h 127.0.0.1 -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
       interval: 5s
       timeout: 3s
       retries: 10

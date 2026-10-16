@@ -9,6 +9,7 @@ export const rootDir = path.resolve(process.cwd(), '../..')
 
 try {
   process.loadEnvFile(path.join(rootDir, '.env'))
-} catch {
-  // nessun .env: valgono le variabili d'ambiente già impostate
+} catch (errore) {
+  // Nessun .env: valgono le variabili d'ambiente già impostate. Un altro errore (es. permessi) va segnalato.
+  if ((errore as NodeJS.ErrnoException).code !== 'ENOENT') throw errore
 }

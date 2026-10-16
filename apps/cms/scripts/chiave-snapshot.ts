@@ -32,7 +32,7 @@ try {
   if ((errore as NodeJS.ErrnoException).code !== 'ENOENT') throw errore
 }
 // Vuota anche con le virgolette o solo spazi (CMS_API_KEY="").
-const RIGA_VUOTA = /^CMS_API_KEY=\s*(""|'')?\s*$/m
+const RIGA_VUOTA = /^CMS_API_KEY=[ \t]*(""|'')?[ \t]*(?=\r?$)/m
 if (/^CMS_API_KEY=/m.test(env) && !RIGA_VUOTA.test(env)) {
   console.log(`Chiave creata. Nel .env c'è già un CMS_API_KEY: sostituiscilo a mano con\n  CMS_API_KEY=${chiave}`)
 } else {
