@@ -3,7 +3,7 @@ import './env'
 
 import { defaultLocale, locales } from '@brainy/content'
 import { postgresAdapter } from '@payloadcms/db-postgres'
-import { lexicalEditor } from '@payloadcms/richtext-lexical'
+import { LinkFeature, lexicalEditor } from '@payloadcms/richtext-lexical'
 import { it } from '@payloadcms/translations/languages/it'
 import path from 'path'
 import { buildConfig } from 'payload'
@@ -24,6 +24,23 @@ import { Theme } from './globals/Theme'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
+
+// Il testo formattato si limita a ciò che consentiva la base: 
+// grassetto, corsivo, titoli, elenchi, citazioni, linea orizzontale e link con indirizzo libero. Le funzioni escluse non sono usate dal sito e ognuna sarebbe un caso in più da gestire nello snapshot 
+// (es. immagini o link a documenti dentro il testo: le immagini stanno nei blocchi).
+const FUNZIONI_ESCLUSE = [
+  'upload',
+  'relationship',
+  'checklist',
+  'align',
+  'indent',
+  'subscript',
+  'superscript',
+  'strikethrough',
+  'underline',
+  'inlineCode',
+  'link', // si rimette sotto, senza i collegamenti a documenti interni
+]
 
 // DATABASE_URL, se presente, ha la precedenza (database esterno); altrimenti
 // l'indirizzo si ricava dalle stesse variabili DB_* usate da Compose.
@@ -48,7 +65,13 @@ export default buildConfig({
   blocks: sectionBlocks,
   collections: [Users, Media, Pages, Activities, Team, News],
   globals: [Site, Theme, Menu, Sponsors],
-  editor: lexicalEditor(),
+  editor: lexicalEditor({
+    features: ({ defaultFeatures }) => [
+      ...defaultFeatures.filter(({ key }) => !FUNZIONI_ESCLUSE.includes(key)),
+      // Elenco vuoto = nessuna collezione collegabile: restano solo i link con indirizzo libero.
+      LinkFeature({ enabledCollections: [] }),
+    ],
+  }),
   // Pannello solo in italiano: con una sola lingua il codice caricato dal browser è più piccolo e un browser in inglese vede comunque l'italiano.
   i18n: {
     supportedLanguages: { it },

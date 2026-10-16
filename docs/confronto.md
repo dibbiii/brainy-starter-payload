@@ -145,6 +145,50 @@ stessa convenzione di Sveltia per i file multilingua (`home.md`, `home.en.md`, `
 - **Nessun utente demo.** Lo script non crea utenti: il primo amministratore si crea dal
   pannello. Si rifiuta di partire con `NODE_ENV=production` senza `--forza`. Verificato.
 
+## 4 ter. Dal CMS al sito: lo snapshot
+
+Con Sveltia la build del sito legge i file del repository. Con Payload i contenuti stanno nel
+database, quindi serve un passaggio in più: `npm run contenuti:aggiorna` legge l'API REST e
+scrive uno snapshot locale (`apps/site/.snapshot` e `apps/site/public/media`, fuori da Git) da
+cui Astro costruisce il sito. Dopo ogni modifica dell'editor va rilanciato; l'automazione
+(webhook) è rinviata.
+
+- **Solo il pubblicato, senza segreti.** Lo script chiama l'API da anonimo: le bozze, le
+  modifiche non ancora pubblicate di una pagina già pubblicata e i contenuti eliminati non
+  arrivano mai al sito. Verificato.
+- **Testo formattato → HTML.** Convertito al momento dello snapshot (nel database l'HTML non si
+  salva). L'HTML di serie ha classi e attributi inutili (`<li class="" style="" value="1">`) e
+  un `<div>` contenitore: con due convertitori per gli elenchi e l'opzione `disableContainer`
+  l'HTML coincide con quello di `marked` della base, link `mailto:` compresi. Verificato su
+  tutti i contenuti: pagine, attività, news, persone e impostazioni risultano **identici alla
+  base**. Unica differenza di forma: Payload salva i valori predefiniti (`false`, elenchi
+  vuoti) dove nei file della base il campo mancava; il comportamento è lo stesso.
+- **Editor limitato.** Per non gestire nello snapshot immagini o collegamenti a documenti
+  dentro il testo, l'editor offre solo ciò che usava la base (grassetto, corsivo, titoli,
+  elenchi, citazioni, linea orizzontale, link con indirizzo libero). Decisione nostra:
+  Payload permetterebbe molto di più.
+- **Testi alternativi dal Media.** Il campo `*_alt` di ogni immagine si ricava dal Media
+  (nella lingua richiesta). Chi non ha un testo alternativo nel Media non ne ha nel sito.
+- **Collegamenti per slug.** I responsabili e l'attività di una news arrivano come documenti
+  popolati e diventano slug, gli stessi identificatori della base. Un collegamento a un
+  elemento non pubblicato viene omesso con un avviso.
+- **Paginazione.** L'API restituisce pochi documenti alla volta: lo script le scorre tutte e
+  controlla il totale. Provato con 1, 2 e 100 documenti per pagina: stesso risultato.
+- **Aggiornamento sicuro.** Si scrive in una cartella di appoggio e solo a controlli superati
+  (CMS raggiungibile, dati validi con lo schema condiviso di `packages/content`, media
+  scaricati) si copia nel posto vero. Con il CMS spento, un dato non valido (anche azzerato
+  direttamente nel database) o un media che non si scarica, lo snapshot precedente resta
+  invariato, il messaggio dice cosa non va (es. `pages/home → sections.0.title`) e il comando
+  esce con codice 1. Verificato. La copia nel posto vero avviene file per file (ognuno con un
+  rinomina) e non sostituendo la cartella, perché su Windows il server di sviluppo la tiene
+  aperta: per un istante i file possono essere un misto di vecchi e nuovi.
+- **Lingue.** Ogni lingua ha il suo snapshot, completo grazie al ripiego sull'italiano. Un
+  codice di lingua sconosciuto non esiste nello script (si scorre l'elenco di
+  `packages/content`), quindi il problema della lingua ignorata dall'API non si pone.
+- **Media.** Si scaricano solo quelli usati dai contenuti pubblicati e si tolgono quelli che
+  non servono più. Gli indirizzi diventano `/media/nome` (Astro li copia dalla cartella
+  `public`).
+
 ## 5. Il pannello in uso (provato nel browser il 13 ottobre 2026)
 
 - **Cambio lingua.** Il selettore «Locale» è in alto a destra (Italiano, English, Deutsch).

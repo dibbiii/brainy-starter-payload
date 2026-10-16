@@ -8,10 +8,15 @@
     "dev": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
-    "check": "astro check"
+    "check": "astro check",
+    "check:contenuti": "tsc -p scripts/tsconfig.json",
+    "contenuti:aggiorna": "tsx scripts/aggiorna-contenuti.ts",
+    "test:contenuti": "node --import tsx --test \"scripts/**/*.test.ts\"",
+    "verifica:equivalenza": "tsx scripts/verifica-equivalenza.ts"
   },
   "dependencies": {
     "@astrojs/sitemap": "^3.7.4",
+    "@brainy/content": "*",
     "@fontsource-variable/archivo": "^5.3.0",
     "@fontsource-variable/fraunces": "^5.3.0",
     "@fontsource-variable/lora": "^5.3.0",
@@ -19,13 +24,16 @@
     "@fontsource-variable/source-serif-4": "^5.3.1",
     "@fontsource/atkinson-hyperlegible": "^5.3.0",
     "@fontsource/barlow-condensed": "^5.3.0",
+    "@payloadcms/richtext-lexical": "3.90.2",
     "@tailwindcss/vite": "^4.3.3",
     "astro": "^7.3.7",
     "marked": "^18.1.0",
-    "tailwindcss": "^4.3.3"
+    "tailwindcss": "^4.3.3",
+    "tsx": "^4.23.15"
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.10",
+    "@types/node": "^24.12.3",
     "typescript": "^6.0.3"
   }
 }

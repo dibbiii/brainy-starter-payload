@@ -21,7 +21,8 @@
     "db:up": "docker compose up -d --wait",
     "db:down": "docker compose down",
     "db:logs": "docker compose logs -f db",
-    "seed": "npm run seed -w apps/cms"
+    "seed": "npm run seed -w apps/cms --",
+    "contenuti:aggiorna": "npm run contenuti:aggiorna -w apps/site --"
   },
   "allowScripts": {
     "esbuild@0.28.2": true,
