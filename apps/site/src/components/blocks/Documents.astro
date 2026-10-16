@@ -2,9 +2,14 @@
 // Elenco di documenti da scaricare. Opzioni: anno per documento, ordinamento
 // (come inseriti / più recenti / meno recenti) e il pulsante "Apri" oltre a "Scarica".
 import { wrap, section, button, buttonGhost, buttonPadSm } from '../../lib/ui';
+import { urlSicuro } from '../../lib/format';
 interface File { label: string; file: string; year?: string }
 interface Props { title?: string; files: File[]; sort?: 'entered' | 'newest' | 'oldest'; show_open?: boolean; id?: string }
-const { title, files, sort = 'entered', show_open = false, id } = Astro.props;
+const { title, sort = 'entered', show_open = false, id } = Astro.props;
+const files = Astro.props.files.flatMap((d) => {
+  const file = urlSicuro(d.file);
+  return file ? [{ ...d, file }] : [];
+});
 const ext = (f: string) => f.split('.').pop()?.toUpperCase() ?? '';
 
 // L'anno è testo libero: si ordina solo se è un numero; i documenti senza anno vanno in fondo

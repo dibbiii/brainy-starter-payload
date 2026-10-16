@@ -20,7 +20,7 @@ const grid = 'grid gap-x-gutter gap-y-8 grid-cols-[repeat(auto-fit,minmax(14rem,
       <dl class:list={[grid, image && 'mt-0']}>
         {site.email && <div class={item}><dt class={label}>Email</dt><dd class={value}><a href={`mailto:${site.email}`}>{site.email}</a></dd></div>}
         {site.phone && <div class={item}><dt class={label}>Telefono</dt><dd class={value}><a href={`tel:${site.phone.replace(/\s/g, '')}`}>{site.phone}</a></dd></div>}
-        {site.address && <div class={item}><dt class={label}>Indirizzo</dt><dd class={value} set:html={site.address.replace(/\n/g, '<br>')} /></div>}
+        {site.address && <div class={item}><dt class={label}>Indirizzo</dt><dd class={value}>{site.address.split('\n').map((riga, i) => <>{i > 0 && <br />}{riga}</>)}</dd></div>}
       </dl>
       {image && (
         <figure class="m-0 rounded-brand border border-line bg-paper p-4 text-center">

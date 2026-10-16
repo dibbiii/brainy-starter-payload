@@ -1,7 +1,9 @@
 ---
 import { wrap, segnavia, button, buttonPad } from '../../lib/ui';
+import { urlSicuro } from '../../lib/format';
 interface Props { title: string; subtitle?: string; image?: string; button_label?: string; button_url?: string; size?: 'large' | 'medium'; first?: boolean; id?: string }
-const { title, subtitle, image, button_label, button_url, size = 'large', first } = Astro.props;
+const { title, subtitle, image, button_label, size = 'large', first } = Astro.props;
+const button_url = urlSicuro(Astro.props.button_url);
 const Heading = first ? 'h1' : 'h2';
 ---
 <section class:list={[

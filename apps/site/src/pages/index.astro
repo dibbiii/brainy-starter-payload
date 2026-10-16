@@ -8,8 +8,12 @@ import { wrap, section } from '../lib/ui';
 const page = await getEntry('pages', 'home');
 if (!page) throw new Error('Manca src/content/pages/home.md: creala dal CMS (Pagine → slug "home").');
 const { title, description, show_title, sections } = page.data;
+// Un solo h1 per pagina: se la pagina apre con la copertina, il suo titolo è già l'h1.
+const startsWithHero = sections?.[0]?.type === 'hero';
 ---
 <Base title={title} description={description} hideFooterSponsors={sections?.some((s) => s.type === 'sponsors')}>
-  {show_title && <div class:list={[wrap, section]}><h1>{title}</h1></div>}
+  {!startsWithHero && (show_title
+    ? <div class:list={[wrap, section]}><h1>{title}</h1></div>
+    : <h1 class="sr-only">{title}</h1>)}
   <Blocks sections={sections ?? []} />
 </Base>

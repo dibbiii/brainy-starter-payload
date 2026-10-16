@@ -10,21 +10,23 @@ interface Props {
 }
 const { title, layout = 'row', items, id } = Astro.props;
 const isRow = layout === 'row';
+// Classi scritte per intero (Tailwind non legge quelle composte) e niente style="": la CSP lo bloccherebbe.
+const colonne = ['md:grid-cols-2', 'md:grid-cols-3', 'md:grid-cols-4'][Math.min(Math.max(items.length, 2), 4) - 2];
 ---
 <section class={section} id={id}>
   <div class={wrap}>
     {title && <h2 class="mb-6">{title}</h2>}
     {/*
-      Su schermi larghi le colonne sono tante quanti i numeri (--n).
+      Su schermi larghi le colonne sono tante quanti i numeri.
       "row": il contenitore è grigio e tra le celle resta 1px di spazio (gap-px),
       che lascia vedere il grigio e diventa il filetto.
     */}
     <ul
       class:list={[
-        'm-0 grid list-none grid-cols-2 p-0 md:grid-cols-[repeat(var(--n),minmax(0,1fr))]',
+        'm-0 grid list-none grid-cols-2 p-0',
+        colonne,
         isRow ? 'gap-px overflow-hidden rounded-brand border border-line bg-line' : 'gap-4',
       ]}
-      style={`--n:${items.length}`}
     >
       {items.map((item) => (
         <li

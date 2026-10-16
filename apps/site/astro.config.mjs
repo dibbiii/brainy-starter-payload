@@ -19,6 +19,21 @@ export default defineConfig({
   trailingSlash: 'ignore',
   devToolbar: { enabled: false },
   integrations: [sitemap()],
+  // Niente evidenziazione del codice: Shiki usa attributi style="" che la CSP blocca.
+  markdown: { syntaxHighlight: false },
+  // CSP in un <meta>: Astro aggiunge da solo gli hash di script e stili (solo in build, non in dev).
+  security: {
+    csp: {
+      directives: [
+        "default-src 'self'",
+        "img-src 'self' data:",
+        'frame-src https://www.youtube-nocookie.com',
+        "object-src 'none'",
+        "base-uri 'self'",
+        "form-action 'self'",
+      ],
+    },
+  },
   vite: {
     plugins: [tailwindcss()],
   },

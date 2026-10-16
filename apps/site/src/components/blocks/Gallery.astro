@@ -1,17 +1,24 @@
 ---
 // Galleria senza librerie: ogni foto si apre a piena risoluzione in una nuova scheda.
 import { wrap, section } from '../../lib/ui';
+import { urlSicuro } from '../../lib/format';
 interface Props { title?: string; images: { image: string; caption?: string }[]; id?: string }
 const { title, images, id } = Astro.props;
+// Una foto con un indirizzo non valido non si mostra.
+const foto = images.flatMap((g) => {
+  const image = urlSicuro(g.image);
+  return image ? [{ ...g, image }] : [];
+});
 ---
 <section class={section} id={id}>
   <div class={wrap}>
     {title && <h2>{title}</h2>}
     <ul class="grid gap-3 grid-cols-[repeat(auto-fill,minmax(14rem,1fr))] mt-8">
-      {images.map((g) => (
+      {foto.map((g, i) => (
         <li>
           <figure>
-            <a href={g.image} target="_blank" rel="noopener">
+            {/* Senza didascalia il link ha comunque un nome per chi usa un lettore di schermo */}
+            <a href={g.image} target="_blank" rel="noopener" aria-label={g.caption ? undefined : `Foto ${i + 1}, apri a piena risoluzione`}>
               <img class="aspect-square object-cover w-full rounded-brand" src={g.image} alt={g.caption ?? ''} loading="lazy" />
             </a>
             {g.caption && <figcaption class="text-[0.9rem] text-muted mt-[0.35rem]">{g.caption}</figcaption>}

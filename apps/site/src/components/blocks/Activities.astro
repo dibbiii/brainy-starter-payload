@@ -3,10 +3,11 @@
 // Si inserisce in una pagina normale, per esempio quella con indirizzo /discipline.
 import { allActivities, activityUrl } from '../../lib/activities';
 import { membersById } from '../../lib/team';
-import { isExternal } from '../../lib/format';
+import { isExternal, urlSicuro } from '../../lib/format';
 import { wrap, section, lead } from '../../lib/ui';
 interface Props { title?: string; intro?: string; link_label?: string; link_url?: string; show_managers?: boolean; id?: string }
-const { title, intro, link_label, link_url, show_managers = true, id } = Astro.props;
+const { title, intro, link_label, show_managers = true, id } = Astro.props;
+const link_url = urlSicuro(Astro.props.link_url);
 
 const list = await allActivities();
 const items = await Promise.all(

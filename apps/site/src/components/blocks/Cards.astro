@@ -1,9 +1,10 @@
 ---
-import { isExternal } from '../../lib/format';
+import { isExternal, urlSicuro } from '../../lib/format';
 import { wrap, section, lead } from '../../lib/ui';
 interface Item { title: string; highlight?: string; text?: string; image?: string; url?: string }
 interface Props { title?: string; intro?: string; items: Item[]; id?: string }
-const { title, intro, items, id } = Astro.props;
+const { title, intro, id } = Astro.props;
+const items = Astro.props.items.map((c) => ({ ...c, url: urlSicuro(c.url) }));
 ---
 <section class={section} id={id}>
   <div class={wrap}>

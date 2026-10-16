@@ -33,9 +33,9 @@ const startsWithHero = sections[0]?.type === 'hero';
   <ActivityDetail activity={activity} />
 ) : data && (
   <Base title={data.title} description={data.description} hideFooterSponsors={sections.some((s) => s.type === 'sponsors')}>
-    {data.show_title && !startsWithHero && (
-      <PageHeader title={data.title} description={data.description} image={data.header_image} imageAlt={data.header_image_alt} />
-    )}
+    {!startsWithHero && (data.show_title
+      ? <PageHeader title={data.title} description={data.description} image={data.header_image} imageAlt={data.header_image_alt} />
+      : <h1 class="sr-only">{data.title}</h1>)}
     <Blocks sections={sections} />
     {data.show_share && <div class={wrap}><ShareLinks title={data.title} /></div>}
     <SectionNav path={Astro.url.pathname} />

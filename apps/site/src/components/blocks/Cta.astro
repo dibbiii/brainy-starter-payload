@@ -1,7 +1,9 @@
 ---
 import { wrap, section, buttonGhost, buttonPad } from '../../lib/ui';
+import { urlSicuro } from '../../lib/format';
 interface Props { title: string; text?: string; button_label: string; button_url: string; id?: string }
-const { title, text, button_label, button_url, id } = Astro.props;
+const { title, text, button_label, id } = Astro.props;
+const button_url = urlSicuro(Astro.props.button_url);
 ---
 <section class={section} id={id}>
   <div class={wrap}>
@@ -10,7 +12,7 @@ const { title, text, button_label, button_url, id } = Astro.props;
         <h2 class="mb-[0.25em]">{title}</h2>
         {text && <p class="m-0 max-w-[36rem]">{text}</p>}
       </div>
-      <a class:list={[buttonGhost, buttonPad]} href={button_url}>{button_label}</a>
+      {button_url && <a class:list={[buttonGhost, buttonPad]} href={button_url}>{button_label}</a>}
     </div>
   </div>
 </section>

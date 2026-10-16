@@ -1,0 +1,17 @@
+# Intestazioni di sicurezza, lette da Netlify e Cloudflare Pages.
+# Per altri hosting vedi docs/intestazioni-di-sicurezza.md.
+# La CSP delle pagine è già nel <meta> generato da Astro.
+
+/*
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
+  X-Frame-Options: DENY
+  Content-Security-Policy: frame-ancestors 'none'
+  Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=(), usb=()
+
+# I file caricati dagli editor (anche SVG) non devono poter eseguire script.
+/uploads/*
+  Content-Security-Policy: default-src 'none'; img-src 'self' data:; style-src 'unsafe-inline'; frame-ancestors 'none'
+
+/media/*
+  Content-Security-Policy: default-src 'none'; img-src 'self' data:; style-src 'unsafe-inline'; frame-ancestors 'none'

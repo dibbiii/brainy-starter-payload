@@ -1,5 +1,6 @@
 ---
 // Layout comune a tutte le pagine: <head>, SEO, tema, header e footer.
+import { createHash } from 'node:crypto';
 import '@fontsource/barlow-condensed/600.css';
 import '@fontsource/barlow-condensed/700.css';
 import '@fontsource-variable/archivo';
@@ -21,6 +22,10 @@ const { title, description = site.tagline, image = site.og_image, hideFooterSpon
 const fullTitle = title && title !== 'Home' ? `${title} | ${site.name}` : site.name;
 const canonical = new URL(Astro.url.pathname, Astro.site);
 const ogImage = image ? new URL(image, Astro.site).href : undefined;
+// Lo stile del tema è scritto con set:html: il suo hash va dichiarato a mano nella CSP
+// (oggi il <meta> arriva dopo lo stile e non serve, ma ci copre se l'ordine cambia).
+const css = themeCss();
+Astro.csp?.insertStyleHash(`sha256-${createHash('sha256').update(css).digest('base64')}`);
 ---
 <!doctype html>
 <html lang="it" class="scroll-pt-20">
@@ -38,7 +43,7 @@ const ogImage = image ? new URL(image, Astro.site).href : undefined;
     {description && <meta property="og:description" content={description} />}
     {ogImage && <meta property="og:image" content={ogImage} />}
     <meta name="twitter:card" content="summary_large_image" />
-    <style is:inline set:html={themeCss()}></style>
+    <style is:inline set:html={css}></style>
   </head>
   <body class="bg-paper text-ink font-body text-[1.0625rem] leading-[1.6]">
     <a class="absolute -left-[999px] top-2 z-[99] focus:left-2 focus:bg-paper focus:px-4 focus:py-2" href="#contenuto">Vai al contenuto</a>

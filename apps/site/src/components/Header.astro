@@ -32,13 +32,18 @@ const topLink = 'block py-[0.6rem] text-ink no-underline font-semibold hover:tex
       <summary class="list-none cursor-pointer font-semibold px-[0.9rem] py-2 border-2 border-ink rounded-brand group-open:bg-ink group-open:text-paper nav:hidden [&::-webkit-details-marker]:hidden"><span>Menu</span></summary>
       <nav aria-label="Principale" class="max-nav:absolute max-nav:inset-x-0 max-nav:top-full max-nav:bg-paper max-nav:border-b max-nav:border-line max-nav:px-gutter max-nav:pt-2 max-nav:pb-5 max-nav:max-h-[calc(100vh-4.25rem)] max-nav:overflow-y-auto nav:block">
         <ul class="nav:flex nav:gap-7">
-          {menu.map((item) => (
+          {menu.map((item, i) => (
             <li class="group/item max-nav:border-t max-nav:border-line nav:relative">
               {item.url
                 ? <a class={topLink} href={item.url} aria-current={isActive(item.url) ? 'page' : undefined}>{item.label}</a>
-                : <span class="block py-[0.6rem] text-ink font-semibold">{item.label}</span>}
+                : item.children?.length
+                  ? <button type="button" class="block py-[0.6rem] text-ink font-semibold cursor-pointer hover:text-accent" aria-expanded="false" aria-controls={`sottomenu-${i}`} data-sottomenu>{item.label}</button>
+                  : <span class="block py-[0.6rem] text-ink font-semibold">{item.label}</span>}
               {item.children && item.children.length > 0 && (
-                <ul class="nav:hidden nav:absolute nav:top-full nav:-left-4 nav:min-w-56 nav:bg-paper nav:border nav:border-line nav:border-t-[3px] nav:border-t-accent nav:py-[0.4rem] nav:px-4 nav:group-hover/item:block nav:group-focus-within/item:block">
+                <ul id={`sottomenu-${i}`} class:list={[
+                  'nav:hidden nav:absolute nav:top-full nav:-left-4 nav:min-w-56 nav:bg-paper nav:border nav:border-line nav:border-t-[3px] nav:border-t-accent nav:py-[0.4rem] nav:px-4 nav:group-hover/item:block',
+                  item.url ? 'nav:group-focus-within/item:block' : 'nav:group-has-[[aria-expanded=true]]/item:block',
+                ]}>
                   {item.children.map((c) => <li><a class="block py-[0.6rem] pl-4 nav:pl-0 text-ink no-underline font-normal hover:text-accent" href={c.url}>{c.label}</a></li>)}
                 </ul>
               )}
@@ -56,7 +61,31 @@ const topLink = 'block py-[0.6rem] text-ink no-underline font-semibold hover:tex
   // Su desktop il <details> deve risultare sempre aperto; passando a mobile si richiude
   const nav = document.querySelector<HTMLDetailsElement>('[data-nav]');
   const mq = window.matchMedia('(min-width: 52.01rem)');
-  const sync = () => { if (nav) nav.open = mq.matches; };
+  // Voci con sottomenu ma senza link (modello WAI "disclosure"): su desktop il pulsante apre e chiude,
+  // Esc chiude e torna al pulsante; su mobile i sottomenu restano sempre aperti.
+  const pulsanti = document.querySelectorAll<HTMLButtonElement>('[data-sottomenu]');
+  const imposta = (b: HTMLButtonElement, aperto: boolean) => b.setAttribute('aria-expanded', String(aperto));
+  pulsanti.forEach((b) => {
+    const voce = b.closest('li');
+    b.addEventListener('click', () => {
+      if (mq.matches) imposta(b, b.getAttribute('aria-expanded') !== 'true');
+    });
+    voce?.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && mq.matches) { imposta(b, false); b.focus(); }
+    });
+    voce?.addEventListener('focusout', (e) => {
+      if (mq.matches && !voce.contains(e.relatedTarget as Node | null)) imposta(b, false);
+    });
+  });
+  // Safari non dà il focus ai pulsanti cliccati, quindi focusout non basta: chiude anche il clic fuori.
+  document.addEventListener('click', (e) => {
+    if (!mq.matches) return;
+    pulsanti.forEach((b) => { if (!b.closest('li')?.contains(e.target as Node)) imposta(b, false); });
+  });
+  const sync = () => {
+    if (nav) nav.open = mq.matches;
+    pulsanti.forEach((b) => imposta(b, !mq.matches));
+  };
   sync();
   mq.addEventListener('change', sync);
 </script>

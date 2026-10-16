@@ -4,11 +4,15 @@
 import type { CollectionEntry } from 'astro:content';
 import ShareLinks from './ShareLinks.astro';
 import { site } from '../lib/site';
-import { formatDate } from '../lib/format';
+import { formatDate, urlSicuro } from '../lib/format';
 import { lead, prose } from '../lib/ui';
 interface Props { post: CollectionEntry<'news'>; Content: any; band?: boolean }
 const { post, Content, band = false } = Astro.props;
-const { title, date, excerpt, cover, cover_alt, attachments } = post.data;
+const { title, date, excerpt, cover, cover_alt } = post.data;
+const attachments = (post.data.attachments ?? []).flatMap((a) => {
+  const file = urlSicuro(a.file);
+  return file ? [{ ...a, file }] : [];
+});
 ---
 {(!band || excerpt) && (
   <header class="max-w-measure">
@@ -20,7 +24,7 @@ const { title, date, excerpt, cover, cover_alt, attachments } = post.data;
 )}
 {cover && <img class="w-full max-h-[36rem] object-contain object-left mt-8 mb-10 rounded-brand" src={cover} alt={cover_alt ?? ''} />}
 <div class={prose}><Content /></div>
-{attachments && attachments.length > 0 && (
+{attachments.length > 0 && (
   <aside class="max-w-measure mt-12 border-t-[3px] border-ink pt-4">
     <h2 class="text-[1.6rem]">Allegati</h2>
     <ul class="list-disc pl-[1.2em]">{attachments.map((a) => <li><a href={a.file} download>{a.label}</a></li>)}</ul>

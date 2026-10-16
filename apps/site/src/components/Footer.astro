@@ -43,7 +43,7 @@ const onDark = '[&_a]:text-paper [&_a:hover]:text-paper [&_a:hover]:decoration-2
     </div>
     <div>
       <h2 class="text-[1.35rem] mb-3">Contatti</h2>
-      {site.address && <p set:html={site.address.replace(/\n/g, '<br>')} />}
+      {site.address && <p>{site.address.split('\n').map((riga, i) => <>{i > 0 && <br />}{riga}</>)}</p>}
       {site.email && <p><a href={`mailto:${site.email}`}>{site.email}</a></p>}
       {site.phone && <p><a href={`tel:${site.phone.replace(/\s/g, '')}`}>{site.phone}</a></p>}
     </div>
