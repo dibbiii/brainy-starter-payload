@@ -43,12 +43,12 @@ Legenda: [P] da riportare anche nella base Sveltia (e poi in Cauriol), [V] solo 
 - [ ] Da documentare: un'immagine caricata con un tipo dichiarato falso (es. JPEG come `.pdf`) non passa da sharp e tiene i metadati
 
 ## Fase 4 · Seed [V]
-- [ ] Transazioni per elemento
-- [ ] Media riconosciuti anche con il suffisso (`-1`)
-- [ ] Errori di sintassi dei file segnalati; `null` trattato come assente
-- [ ] Editor del progetto per Markdown -> Lexical
-- [ ] `SEED_FORZA=1` al posto di `--forza`
-- [ ] Email nude convertite senza toccare i link esistenti
+- [x] Transazioni per elemento (provato: una traduzione non valida non lascia l'elemento a metà)
+- [x] Media riconosciuti anche con il suffisso (`-1`); dopo un database azzerato si sovrascrive il file invece di creare `-1`
+- [x] Errori di sintassi dei file segnalati (JSON e YAML); `null` trattato come assente
+- [x] Editor del progetto per Markdown -> Lexical (snapshot ancora uguale alla base)
+- [x] `SEED_FORZA=1` al posto di `--forza`
+- [x] Email nude convertite senza toccare link, autolink e codice
 
 ## Fase 5 · `init` e Docker [V]
 - [ ] Nomi PostgreSQL (accenti, `pg_`, 63 caratteri), porte anche su IPv6, `.env` con `wx` e `0600`, messaggio sul volume

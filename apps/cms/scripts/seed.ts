@@ -3,13 +3,14 @@
 // Si lancia solo a mano (npm run seed): mai in avvio, build o aggiornamento.
 // È ripetibile: ogni elemento si riconosce dallo slug, e se esiste già viene saltato per intero,
 // anche se l'editor lo ha modificato. Le Impostazioni si compilano solo se sono ancora vuote.
-// Non crea utenti: il primo amministratore si crea dal pannello.
+// Ogni elemento (con le sue traduzioni) si scrive in una transazione: se qualcosa va storto non resta a metà.
+// Non crea utenti: il primo amministratore si crea dal pannello (in produzione con npm run admin:crea).
 import { readdir, readFile } from 'node:fs/promises'
 import path from 'node:path'
 
 import { defaultLocale, locales } from '@brainy/content'
-import { convertMarkdownToLexical, editorConfigFactory } from '@payloadcms/richtext-lexical'
-import { getPayload } from 'payload'
+import { convertMarkdownToLexical, type LexicalRichTextAdapter } from '@payloadcms/richtext-lexical'
+import { commitTransaction, createLocalReq, getPayload, initTransaction, killTransaction, type PayloadRequest } from 'payload'
 import { parse } from 'yaml'
 
 import { rootDir } from '../src/env'
@@ -28,9 +29,10 @@ type Contenuto = {
   traduzioni: Record<string, { dati: Dati; corpo: string }>
 }
 
-if (process.env.NODE_ENV === 'production' && !process.argv.includes('--forza')) {
+// Una variabile e non un'opzione: "payload run" non passa le opzioni allo script.
+if (process.env.NODE_ENV === 'production' && process.env.SEED_FORZA !== '1') {
   console.error('Seed rifiutato: NODE_ENV è "production". Il seed serve per gli esempi, non per i dati veri.')
-  console.error('Se è davvero quello che vuoi, aggiungi --forza.')
+  console.error('Se è davvero quello che vuoi, rilancia con SEED_FORZA=1.')
   process.exit(1)
 }
 
@@ -40,7 +42,21 @@ const altreLingue = locales.map(({ code }) => code).filter((code) => code !== de
 const payload = await getPayload({ config })
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const api = payload as any
-const editorConfig = await editorConfigFactory.default({ config: await config })
+// L'editor del progetto (senza h1, immagini e link interni), non quello di serie di Lexical.
+const editorConfig = (payload.config.editor as LexicalRichTextAdapter).editorConfig
+
+/** Esegue la scrittura di un elemento in una transazione: o tutto o niente. */
+async function inTransazione(scrivi: (req: PayloadRequest) => Promise<void>) {
+  const req = await createLocalReq({}, payload)
+  if (!(await initTransaction(req))) throw new Error('Il database non ha aperto una transazione: il seed ne ha bisogno.')
+  try {
+    await scrivi(req)
+    await commitTransaction(req)
+  } catch (errore) {
+    await killTransaction(req)
+    throw errore
+  }
+}
 
 const destinazione = (() => {
   try {
@@ -63,11 +79,19 @@ const registra = (area: string, esito: 'creati' | 'saltati') => {
   bilancio[area][esito]++
 }
 
+/** Un file JSON del seed, oppure null se non c'è. Un errore di sintassi si segnala con il nome del file. */
 const leggiJson = async (file: string): Promise<Dati | null> => {
+  let testo: string
   try {
-    return JSON.parse(await readFile(file, 'utf8')) as Dati
-  } catch {
-    return null
+    testo = await readFile(file, 'utf8')
+  } catch (errore) {
+    if ((errore as NodeJS.ErrnoException).code === 'ENOENT') return null
+    throw errore
+  }
+  try {
+    return JSON.parse(testo) as Dati
+  } catch (errore) {
+    throw new Error(`${path.relative(rootDir, file)} non è un JSON valido: ${(errore as Error).message}`)
   }
 }
 
@@ -76,14 +100,24 @@ const leggiMarkdown = async (file: string): Promise<{ dati: Dati; corpo: string 
   const testo = (await readFile(file, 'utf8')).replace(/\r\n/g, '\n')
   const parti = testo.match(/^---\n([\s\S]*?)\n---\n?([\s\S]*)$/)
   if (!parti) throw new Error(`Intestazione YAML mancante in ${file}`)
-  return { dati: (parse(parti[1]) as Dati | null) ?? {}, corpo: parti[2].trim() }
+  let dati: Dati | null
+  try {
+    dati = parse(parti[1]) as Dati | null
+  } catch (errore) {
+    throw new Error(`Intestazione YAML non valida in ${path.relative(rootDir, file)}: ${(errore as Error).message}`)
+  }
+  return { dati: dati ?? {}, corpo: parti[2].trim() }
 }
 
 // --- Conversioni -------------------------------------------------------------------------
 
 // Lexical non trasforma le email nude in link (lo fa il Markdown della base): lo facciamo noi.
+// Link, autolink <...> e codice `...` già scritti restano come sono: si riconoscono per primi e si saltano.
 const linkEmail = (markdown: string): string =>
-  markdown.replace(/(?<![\w.+\-@:/[(])([\w.+-]+@[\w-]+(?:\.[\w-]+)+)/g, '[$1](mailto:$1)')
+  markdown.replace(
+    /(`[^`]*`|\[[^\]]*\]\([^)]*\)|<[^>\s]+>)|(?<![\w.+\-/:=?&])([a-z0-9][\w.+-]*@[a-z0-9-]+(?:\.[a-z0-9-]*[a-z0-9])+)(?![\w-])/gi,
+    (tutto, daLasciare: string | undefined, email: string | undefined) => (daLasciare ? tutto : `[${email}](mailto:${email})`),
+  )
 
 const markdownInLexical = (markdown: string) =>
   convertMarkdownToLexical({ editorConfig, markdown: linkEmail(markdown) })
@@ -98,10 +132,11 @@ const CAMPI_TESTO_FORMATTATO = new Set(['content', 'body'])
 /**
  * Trasforma i dati della base nel formato del CMS:
  * - /uploads/x -> id del Media; i testi alternativi (*_alt) si tolgono: stanno nel Media;
- * - Markdown -> Lexical; stringhe vuote -> campo assente.
+ * - Markdown -> Lexical; stringhe vuote e null -> campo assente.
  */
 const preparaDati = (valore: unknown, chiave = ''): unknown => {
-  if (Array.isArray(valore)) return valore.map((elemento) => preparaDati(elemento, chiave))
+  if (valore === null) return undefined
+  if (Array.isArray(valore)) return valore.map((elemento) => preparaDati(elemento, chiave)).filter((e) => e !== undefined)
   if (valore && typeof valore === 'object') {
     const risultato: Dati = {}
     for (const [k, v] of Object.entries(valore)) {
@@ -131,6 +166,8 @@ const preparaSezioni = (sezioni: Dati[] = []) =>
  * (la struttura dei blocchi è comune a tutte le lingue) e così i riferimenti e gli id delle righe restano.
  */
 const sovrapponi = (base: unknown, traduzione: unknown): unknown => {
+  // Una traduzione assente o null lascia il valore com'è (senza, un null cancellerebbe la struttura comune).
+  if (traduzione === null || traduzione === undefined) return base
   if (Array.isArray(traduzione)) {
     return (Array.isArray(base) ? base : []).map((elemento, i) =>
       traduzione[i] === undefined ? elemento : sovrapponi(elemento, traduzione[i]),
@@ -154,25 +191,40 @@ const senzaCampiDiSistema = (doc: Dati): Dati =>
 async function seminaMedia() {
   const dir = path.join(seedDir, 'media')
   const testiAlt = ((await leggiJson(path.join(dir, 'alt.json'))) ?? {}) as Record<string, Record<string, string>>
-  for (const file of (await readdir(dir)).filter((nome) => nome !== 'alt.json').sort()) {
-    const esistente = await api.find({ collection: 'media', where: { filename: { equals: file } }, limit: 1, depth: 0 })
-    if (esistente.docs[0]) {
-      mediaId.set(file, esistente.docs[0].id)
+  const fileDelSeed = (await readdir(dir)).filter((nome) => nome !== 'alt.json').sort()
+  for (const file of fileDelSeed) {
+    // Si riconosce anche con il suffisso che Payload aggiunge quando il nome è già preso ("logo-1.svg")
+    // e con l'estensione che Payload riscrive per le immagini ("foto.jpeg" diventa "foto.jpg"): conta la base.
+    const { name: base } = path.parse(file)
+    const simili = await api.find({ collection: 'media', where: { filename: { like: base } }, limit: 0, pagination: false, depth: 0 })
+    const stessoFile = new RegExp(`^${base.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}(-\\d+)?\\.[^.]+$`, 'i')
+    // Un nome che è proprio un altro file del seed ("neve-2.svg") non è una copia di questo.
+    const altri = new Set(fileDelSeed.filter((f) => f !== file).map((f) => f.toLowerCase()))
+    const candidati = (simili.docs as Dati[]).filter((d) => !altri.has(String(d.filename).toLowerCase()))
+    const esistente = candidati.find((d) => d.filename === file) ?? candidati.find((d) => stessoFile.test(d.filename))
+    if (esistente) {
+      mediaId.set(file, esistente.id)
       registra('media', 'saltati')
-      console.log(`  = media/${file} (già presente)`)
+      console.log(`  = media/${file} (già presente${esistente.filename !== file ? ` come ${esistente.filename}` : ''})`)
       continue
     }
     const alt = testiAlt[file] ?? {}
-    const doc = await api.create({
-      collection: 'media',
-      data: { alt: alt[defaultLocale] },
-      filePath: path.join(dir, file),
-      locale: defaultLocale,
+    await inTransazione(async (req) => {
+      const doc = await api.create({
+        collection: 'media',
+        data: { alt: alt[defaultLocale] },
+        filePath: path.join(dir, file),
+        locale: defaultLocale,
+        // Nessun Media ha questo nome (nemmeno con altre maiuscole): un file uguale nella cartella è rimasto
+        // da un database azzerato. Si sovrascrive, invece di creare "logo-1.svg".
+        overwriteExistingFiles: true,
+        req,
+      })
+      for (const lingua of altreLingue) {
+        if (alt[lingua]) await api.update({ collection: 'media', id: doc.id, locale: lingua, data: { alt: alt[lingua] }, req })
+      }
+      mediaId.set(file, doc.id)
     })
-    for (const lingua of altreLingue) {
-      if (alt[lingua]) await api.update({ collection: 'media', id: doc.id, locale: lingua, data: { alt: alt[lingua] } })
-    }
-    mediaId.set(file, doc.id)
     registra('media', 'creati')
     console.log(`  + media/${file}`)
   }
@@ -214,18 +266,15 @@ async function semina(collection: Collezione, costruisci: (contenuto: Contenuto)
       continue
     }
     const dati = await costruisci(contenuto)
-    const doc = await api.create({ collection, data: { ...dati, slug: contenuto.slug }, locale: defaultLocale })
-    for (const [lingua, { dati: datiTradotti, corpo }] of Object.entries(contenuto.traduzioni)) {
-      // Si rilegge il documento nella lingua, si sovrappongono i testi e si rimanda tutta la struttura.
-      const attuale = await api.findByID({ collection, id: doc.id, locale: lingua, fallbackLocale: false, depth: 0 })
-      const tradotto = preparaDati({ ...datiTradotti, ...(corpo ? { body: corpo } : {}) })
-      await api.update({
-        collection,
-        id: doc.id,
-        locale: lingua,
-        data: sovrapponi(senzaCampiDiSistema(attuale), tradotto),
-      })
-    }
+    await inTransazione(async (req) => {
+      const doc = await api.create({ collection, data: { ...dati, slug: contenuto.slug }, locale: defaultLocale, req })
+      for (const [lingua, { dati: datiTradotti, corpo }] of Object.entries(contenuto.traduzioni)) {
+        // Si rilegge il documento nella lingua, si sovrappongono i testi e si rimanda tutta la struttura.
+        const attuale = await api.findByID({ collection, id: doc.id, locale: lingua, fallbackLocale: false, depth: 0, req })
+        const tradotto = preparaDati({ ...datiTradotti, ...(corpo ? { body: corpo } : {}) })
+        await api.update({ collection, id: doc.id, locale: lingua, data: sovrapponi(senzaCampiDiSistema(attuale), tradotto), req })
+      }
+    })
     registra(collection, 'creati')
     console.log(`  + ${collection}/${contenuto.slug} (${[defaultLocale, ...Object.keys(contenuto.traduzioni)].join(', ')})`)
   }
@@ -242,19 +291,17 @@ async function seminaGlobale(slug: Globale, vuoto: (globale: Dati) => boolean) {
   }
   const dati = await leggiJson(path.join(seedDir, 'settings', `${slug}.json`))
   if (!dati) throw new Error(`File mancante: seed/settings/${slug}.json`)
-  await api.updateGlobal({ slug, data: preparaDati(dati), locale: defaultLocale })
   const lingueFatte = [defaultLocale]
-  for (const lingua of altreLingue) {
-    const tradotto = await leggiJson(path.join(seedDir, 'settings', `${slug}.${lingua}.json`))
-    if (!tradotto) continue
-    const letto = (await api.findGlobal({ slug, locale: lingua, fallbackLocale: false, depth: 0 })) as Dati
-    await api.updateGlobal({
-      slug,
-      locale: lingua,
-      data: sovrapponi(senzaCampiDiSistema(letto), preparaDati(tradotto)),
-    })
-    lingueFatte.push(lingua)
-  }
+  await inTransazione(async (req) => {
+    await api.updateGlobal({ slug, data: preparaDati(dati), locale: defaultLocale, req })
+    for (const lingua of altreLingue) {
+      const tradotto = await leggiJson(path.join(seedDir, 'settings', `${slug}.${lingua}.json`))
+      if (!tradotto) continue
+      const letto = (await api.findGlobal({ slug, locale: lingua, fallbackLocale: false, depth: 0, req })) as Dati
+      await api.updateGlobal({ slug, locale: lingua, data: sovrapponi(senzaCampiDiSistema(letto), preparaDati(tradotto)), req })
+      lingueFatte.push(lingua)
+    }
+  })
   registra('impostazioni', 'creati')
   console.log(`  + ${slug} (${lingueFatte.join(', ')})`)
 }

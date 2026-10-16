@@ -24,7 +24,7 @@
     "db:up": "docker compose up -d --wait",
     "db:down": "docker compose down",
     "db:logs": "docker compose logs -f db",
-    "seed": "npm run seed -w apps/cms --",
+    "seed": "npm run seed -w apps/cms",
     "admin:crea": "npm run admin:crea -w apps/cms",
     "chiave:snapshot": "npm run chiave:snapshot -w apps/cms",
     "contenuti:aggiorna": "npm run contenuti:aggiorna -w apps/site --"
