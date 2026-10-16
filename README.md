@@ -221,6 +221,11 @@ backend:
 
 Un unico proxy può servire tutti i clienti.
 
+### Intestazioni di sicurezza
+
+Su Netlify e Cloudflare Pages sono già impostate in `apps/site/public/_headers`; su altri
+hosting vanno configurate a mano: vedi [docs/intestazioni-di-sicurezza.md](docs/intestazioni-di-sicurezza.md).
+
 ## Chi può modificare dal pannello
 
 Il pannello non ha utenti propri: l'accesso lo decide **GitHub**.

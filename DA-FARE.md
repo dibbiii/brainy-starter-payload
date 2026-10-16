@@ -7,15 +7,15 @@ Legenda: [P] da riportare anche nella base Sveltia (e poi in Cauriol), [V] solo 
 - [x] [V] `engines` (Node >= 22.12) e `.nvmrc`
 
 ## Fase 1 · Correzioni del sito portabili [P]
-- [ ] Indirizzo senza `set:html` (Footer, Contatti)
-- [ ] Link sicuri: `urlSicuro()` in tutti gli `href` che arrivano dai contenuti
-- [ ] Colori del tema validati prima di entrare nel CSS
-- [ ] Sottomenu apribili da tastiera (modello WAI disclosure)
-- [ ] Un solo `h1` per pagina (home e pagine interne)
-- [ ] Galleria: link con nome accessibile anche senza didascalia
-- [ ] Avviso in build se il contrasto dei colori del tema è insufficiente
-- [ ] Intestazioni di sicurezza (`netlify.toml` e CSP)
-- [ ] Riportare nella base Sveltia: patch `--relative=apps/site` + `.gitattributes` + `pattern` sui campi URL di `config.yml`
+- [x] Indirizzo senza `set:html` (Footer, Contatti)
+- [x] Link sicuri: `urlSicuro()` in tutti gli `href` che arrivano dai contenuti
+- [x] Colori del tema validati prima di entrare nel CSS
+- [x] Sottomenu apribili da tastiera (modello WAI disclosure)
+- [x] Un solo `h1` per pagina (home e pagine interne)
+- [x] Galleria: link con nome accessibile anche senza didascalia
+- [x] Avviso in build se il contrasto dei colori del tema è insufficiente
+- [x] Intestazioni di sicurezza: CSP nel `<meta>`, `public/_headers`, guida per gli altri hosting
+- [ ] Riportare nella base Sveltia: patch `--relative=apps/site` + `.gitattributes` + `pattern` sui campi URL di `config.yml` + a mano `docs/intestazioni-di-sicurezza.md` e il paragrafo del README (percorso `public/_headers`)
 - [ ] Riportare in Cauriol (merge della base, build di prova)
 
 ## Fase 2 · Snapshot: rifinitura [V]
@@ -61,6 +61,7 @@ Legenda: [P] da riportare anche nella base Sveltia (e poi in Cauriol), [V] solo 
 ## Fase 7 · Sito sullo snapshot [V]
 - [ ] Loader per collezione con controllo di `meta.json`, `rendered.html` per le news, schema da `@brainy/content`
 - [ ] Via `md()`/`marked` dal sito; URL del sito dallo snapshot; via i vecchi file di contenuto e `public/uploads`
+- [ ] Link e immagini dell'HTML generato da `html.ts` passati da `urlSicuro` (in Astro 7 i plugin rehype richiedono `@astrojs/markdown-satteri`: meglio farlo nel convertitore)
 - [ ] Confronto pagina per pagina con la base
 
 ## Fase 8 · Multilingua e testi alternativi [V]
