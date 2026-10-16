@@ -45,11 +45,27 @@ const eMedia = (v: unknown): v is MediaPopolato =>
   typeof (v as MediaPopolato).filename === 'string' &&
   typeof (v as MediaPopolato).mimeType === 'string'
 
+// Nomi che Windows rifiuta, anche con un'estensione o spazi prima ("con.txt", "nul .txt").
+const NOMI_RISERVATI = /^(con|prn|aux|nul|conin\$|conout\$|com[1-9¹²³]|lpt[1-9¹²³]) *(\..*)?$/i
+
+/** Perché un nome di file non va bene nello snapshot, oppure undefined se va bene. */
+export function problemaNomeFile(nome: string): string | undefined {
+  if (!nome || nome !== path.posix.basename(nome) || nome.includes('\\')) return 'contiene percorsi'
+  // eslint-disable-next-line no-control-regex
+  if (/[\u0000-\u001f\u007f<>:"|?*]/.test(nome)) return 'contiene caratteri non ammessi nei nomi dei file'
+  if (nome.startsWith('.')) return 'inizia con un punto (file nascosto)'
+  if (/[. ]$/.test(nome)) return 'finisce con un punto o uno spazio'
+  if (NOMI_RISERVATI.test(nome)) return 'è un nome riservato su Windows'
+  if (Buffer.byteLength(nome) > 200) return 'è troppo lungo'
+  return undefined
+}
+
 /** Registra il file tra quelli da scaricare e restituisce il suo indirizzo nel sito (codificato per l'URL). */
 function registraMedia(media: MediaPopolato, ctx: Contesto): string | undefined {
   const nome = media.filename
-  if (!nome || nome !== path.basename(nome) || nome.includes('\\')) {
-    ctx.errori.push(`${ctx.dove}: il nome del file "${nome}" non è valido per lo snapshot (contiene percorsi).`)
+  const problema = problemaNomeFile(nome)
+  if (problema) {
+    ctx.errori.push(`${ctx.dove}: il nome del file "${nome}" non è valido per lo snapshot (${problema}). Rinomina il media nel CMS.`)
     return undefined
   }
   const minuscolo = nome.toLowerCase()

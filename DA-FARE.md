@@ -20,14 +20,13 @@ Legenda: [P] da riportare anche nella base Sveltia (e poi in Cauriol), [V] solo 
 - [ ] Quando l'utente lo chiede: unire `correzioni-sito` in `main` e pubblicare, nella base e in Cauriol
 
 ## Fase 2 · Snapshot: rifinitura [V]
-- [ ] Segnali (Ctrl+C) e blocco orfano riconosciuto (PID)
-- [ ] Stato di `meta.json` letto all'avvio e controllato da `verifica:equivalenza`
-- [ ] Test delle fasi di `aggiorna()` con percorsi iniettati
-- [ ] HTML: solo convertitori ammessi, errore sui nodi sconosciuti (via il controllo sul testo)
-- [ ] Lettura per `id`, corpo dentro i tentativi, avvisi anche in errore, `CMS_URL` validato, nomi media severi, `yaml` nel sito
-- [ ] Lingue in `verifica-equivalenza.ts` prese da `@brainy/content`
-- [ ] Lettura delle email del Team con un utente in sola lettura (decisione 16/10)
-- [ ] Snapshot e media versionati nel repository (decisione 16/10: togliere da `.gitignore` al momento del collegamento del sito)
+- [x] Segnali (Ctrl+C) e blocco orfano riconosciuto (PID) — Ctrl+C provato solo nel codice: su Windows non si può simulare da script
+- [x] Stato di `meta.json` letto all'avvio e controllato da `verifica:equivalenza`
+- [x] Test delle fasi di `aggiorna()` con percorsi iniettati
+- [x] HTML: solo convertitori ammessi, errore sui nodi sconosciuti (via il controllo sul testo)
+- [x] Lettura per `id`, corpo dentro i tentativi, avvisi anche in errore, `CMS_URL` validato, nomi media severi, `yaml` nel sito
+- [x] Lingue in `verifica-equivalenza.ts` prese da `@brainy/content`
+- [x] Lettura delle email del Team con una chiave di lettura (collezione `chiavi-api`, `npm run chiave:snapshot`, `CMS_API_KEY`)
 
 ## Fase 3 · CMS [V]
 - [ ] Slug libero (`beforeDuplicate` + suffisso) e Duplica su Team
@@ -37,7 +36,8 @@ Legenda: [P] da riportare anche nella base Sveltia (e poi in Cauriol), [V] solo 
 - [ ] `access.unlock` solo admin, ultimo admin protetto, `first-register` bloccato in produzione + comando per il primo admin
 - [ ] URL validati nel CMS e nello schema dello snapshot
 - [ ] Media: estensione coerente con il tipo, `resizeOptions` (via i metadati GPS, da provare con una foto)
-- [ ] Email del Team leggibili solo con account
+- [x] Email del Team leggibili solo con account (fatto nella Fase 2)
+- [ ] Titoli dell'editor senza h1 (`HeadingFeature`): oggi lo snapshot trasforma h1 in h2
 - [ ] Correggere il commento su `saveToJWT` in `Users.ts`
 
 ## Fase 4 · Seed [V]
@@ -50,6 +50,7 @@ Legenda: [P] da riportare anche nella base Sveltia (e poi in Cauriol), [V] solo 
 
 ## Fase 5 · `init` e Docker [V]
 - [ ] Nomi PostgreSQL (accenti, `pg_`, 63 caratteri), porte anche su IPv6, `.env` con `wx` e `0600`, messaggio sul volume
+- [ ] `init`: riga `CMS_API_KEY=` vuota nel `.env` generato
 - [ ] Compose: ICU `it-IT`, healthcheck con `-h 127.0.0.1`
 - [ ] `env.ts`/`next.mjs`: solo ENOENT ignorato, `NODE_OPTIONS` aggiunto, sviluppo su 127.0.0.1
 
@@ -62,7 +63,8 @@ Legenda: [P] da riportare anche nella base Sveltia (e poi in Cauriol), [V] solo 
 ## Fase 7 · Sito sullo snapshot [V]
 - [ ] Loader per collezione con controllo di `meta.json`, `rendered.html` per le news, schema da `@brainy/content`
 - [ ] Via `md()`/`marked` dal sito; URL del sito dallo snapshot; via i vecchi file di contenuto e `public/uploads`
-- [ ] Link e immagini dell'HTML generato da `html.ts` passati da `urlSicuro` (in Astro 7 i plugin rehype richiedono `@astrojs/markdown-satteri`: meglio farlo nel convertitore)
+- [x] Link dell'HTML generato da `html.ts` passati da `urlSicuro` (fatto nella Fase 2; immagini nel testo escluse dall'editor)
+- [ ] Snapshot e media versionati nel repository (decisione 16/10: togliere da `.gitignore` al momento del collegamento del sito)
 - [ ] Confronto pagina per pagina con la base
 
 ## Fase 8 · Multilingua e testi alternativi [V]
@@ -76,6 +78,7 @@ Legenda: [P] da riportare anche nella base Sveltia (e poi in Cauriol), [V] solo 
 
 ## Fase 10 · Documentazione
 - [ ] README per Payload, guide `docs/` riscritte
+- [ ] Documentare `CMS_API_KEY` e `npm run chiave:snapshot` (anche in hosting: variabile della piattaforma)
 - [ ] `docs/confronto.md` corretto (affermazioni sbagliate, "verificato" solo con prova riproducibile)
 - [ ] In `docs/aggiungere-un-blocco.md` (anche nella base): con la CSP niente `style=""`, script inline solo tramite Astro, iframe solo da YouTube
 - [ ] Accorciare i commenti troppo lunghi scritti finora

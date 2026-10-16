@@ -12,6 +12,7 @@ import sharp from 'sharp'
 
 import { sectionBlocks } from './blocks'
 import { Activities } from './collections/Activities'
+import { ChiaviApi } from './collections/ChiaviApi'
 import { Media } from './collections/Media'
 import { News } from './collections/News'
 import { Pages } from './collections/Pages'
@@ -63,7 +64,7 @@ export default buildConfig({
   },
   // I blocchi delle sezioni si definiscono qui una volta sola e si richiamano per nome (campo sections).
   blocks: sectionBlocks,
-  collections: [Users, Media, Pages, Activities, Team, News],
+  collections: [Users, ChiaviApi, Media, Pages, Activities, Team, News],
   globals: [Site, Theme, Menu, Sponsors],
   editor: lexicalEditor({
     features: ({ defaultFeatures }) => [

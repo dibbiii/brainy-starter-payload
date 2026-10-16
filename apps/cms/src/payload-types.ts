@@ -64,6 +64,7 @@ export type SupportedTimezones =
 export interface Config {
   auth: {
     users: UserAuthOperations;
+    'chiavi-api': ChiaviApiAuthOperations;
   };
   blocks: {
     hero: HeroBlock;
@@ -84,6 +85,7 @@ export interface Config {
   };
   collections: {
     users: User;
+    'chiavi-api': ChiaviApi;
     media: Media;
     pages: Page;
     activities: Activity;
@@ -97,6 +99,7 @@ export interface Config {
   collectionsJoins: {};
   collectionsSelect: {
     users: UsersSelect<false> | UsersSelect<true>;
+    'chiavi-api': ChiaviApiSelect<false> | ChiaviApiSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
     pages: PagesSelect<false> | PagesSelect<true>;
     activities: ActivitiesSelect<false> | ActivitiesSelect<true>;
@@ -127,13 +130,31 @@ export interface Config {
   widgets: {
     collections: CollectionsWidget;
   };
-  user: User;
+  user: User | ChiaviApi;
   jobs: {
     tasks: unknown;
     workflows: unknown;
   };
 }
 export interface UserAuthOperations {
+  forgotPassword: {
+    email: string;
+    password: string;
+  };
+  login: {
+    email: string;
+    password: string;
+  };
+  registerFirstUser: {
+    email: string;
+    password: string;
+  };
+  unlock: {
+    email: string;
+    password: string;
+  };
+}
+export interface ChiaviApiAuthOperations {
   forgotPassword: {
     email: string;
     password: string;
@@ -479,6 +500,23 @@ export interface User {
   collection: 'users';
 }
 /**
+ * Per lo snapshot del sito: crea la chiave con npm run chiave:snapshot e mettila in CMS_API_KEY.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "chiavi-api".
+ */
+export interface ChiaviApi {
+  id: number;
+  nome: string;
+  updatedAt: string;
+  createdAt: string;
+  enableAPIKey?: boolean | null;
+  apiKey?: string | null;
+  apiKeyIndex?: string | null;
+  hasAPIKey?: boolean | null;
+  collection: 'chiavi-api';
+}
+/**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "pages".
  */
@@ -680,6 +718,10 @@ export interface PayloadLockedDocument {
         value: number | User;
       } | null)
     | ({
+        relationTo: 'chiavi-api';
+        value: number | ChiaviApi;
+      } | null)
+    | ({
         relationTo: 'media';
         value: number | Media;
       } | null)
@@ -700,10 +742,15 @@ export interface PayloadLockedDocument {
         value: number | News;
       } | null);
   globalSlug?: string | null;
-  user: {
-    relationTo: 'users';
-    value: number | User;
-  };
+  user:
+    | {
+        relationTo: 'users';
+        value: number | User;
+      }
+    | {
+        relationTo: 'chiavi-api';
+        value: number | ChiaviApi;
+      };
   updatedAt: string;
   createdAt: string;
 }
@@ -713,10 +760,15 @@ export interface PayloadLockedDocument {
  */
 export interface PayloadPreference {
   id: number;
-  user: {
-    relationTo: 'users';
-    value: number | User;
-  };
+  user:
+    | {
+        relationTo: 'users';
+        value: number | User;
+      }
+    | {
+        relationTo: 'chiavi-api';
+        value: number | ChiaviApi;
+      };
   key?: string | null;
   value?:
     | {
@@ -764,6 +816,19 @@ export interface UsersSelect<T extends boolean = true> {
         createdAt?: T;
         expiresAt?: T;
       };
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "chiavi-api_select".
+ */
+export interface ChiaviApiSelect<T extends boolean = true> {
+  nome?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  enableAPIKey?: T;
+  apiKey?: T;
+  apiKeyIndex?: T;
+  hasAPIKey?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema

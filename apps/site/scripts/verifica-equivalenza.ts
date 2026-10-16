@@ -6,16 +6,29 @@
 // snapshot (percorsi /media, Markdown convertito in HTML con `marked` come faceva il sito, niente *_alt:
 // il testo alternativo ora viene dal Media) e lo confronta con quello prodotto dal CMS.
 // Il confronto ignora gli spazi nell'HTML e i valori predefiniti che Payload salva (false, elenchi vuoti).
-import { readdirSync, readFileSync } from 'node:fs'
+import { existsSync, readdirSync, readFileSync } from 'node:fs'
 import path from 'node:path'
 import { isDeepStrictEqual } from 'node:util'
 
-import { activityData, menuData, newsData, pageData, siteData, sponsorsData, teamData, themeData } from '@brainy/content'
+import {
+  activityData,
+  defaultLocale,
+  locales,
+  menuData,
+  newsData,
+  pageData,
+  siteData,
+  snapshotMeta,
+  sponsorsData,
+  teamData,
+  themeData,
+} from '@brainy/content'
 import { marked } from 'marked'
 import { parse } from 'yaml'
 
 const radice = path.resolve(import.meta.dirname, '../../..')
-const snapshot = path.join(radice, 'apps/site/.snapshot/it')
+const cartellaSnapshot = path.join(radice, 'apps/site/.snapshot')
+const snapshot = path.join(cartellaSnapshot, defaultLocale)
 const seed = path.join(radice, 'seed')
 
 let fallite = 0
@@ -25,6 +38,18 @@ const esito = (riuscito: boolean, messaggio: string, dettaglio = '') => {
 }
 
 const leggiJson = (file: string) => JSON.parse(readFileSync(file, 'utf8'))
+
+// Uno snapshot rimasto a metà non va confrontato: i file potrebbero essere di due aggiornamenti diversi.
+const fileMeta = path.join(cartellaSnapshot, 'meta.json')
+const meta = snapshotMeta.safeParse(existsSync(fileMeta) ? leggiJson(fileMeta) : undefined)
+esito(meta.success && meta.data.stato === 'ok', 'meta.json valido e con stato "ok"', meta.success ? ` (${meta.data.stato})` : '')
+if (!meta.success || meta.data.stato !== 'ok') {
+  console.log('\nRilancia npm run contenuti:aggiorna prima della verifica.')
+  process.exit(1)
+}
+
+// I file tradotti del seed hanno il codice della lingua prima di ".md" (es. chi-siamo.en.md).
+const traduzione = new RegExp(`\\.(${locales.filter((l) => l.code !== defaultLocale).map((l) => l.code).join('|')})\\.md$`)
 const markdownInHtml = (testo: string) => marked.parse(testo, { async: false }) as string
 const normalizzaHtml = (html: string) => html.replace(/\s+/g, ' ').replace(/> </g, '><').trim()
 const tondo = <T>(valore: T): T => JSON.parse(JSON.stringify(valore))
@@ -96,7 +121,7 @@ const collezioni = { pages: pageData, activities: activityData, news: newsData, 
 for (const [nome, schema] of Object.entries(collezioni)) {
   const cartella = path.join(seed, 'content', nome)
   const slug = readdirSync(cartella)
-    .filter((f) => f.endsWith('.md') && !/\.(en|de)\.md$/.test(f))
+    .filter((f) => f.endsWith('.md') && !traduzione.test(f))
     .map((f) => f.replace(/\.md$/, ''))
   const voci = leggiJson(path.join(snapshot, `${nome}.json`)) as { id: string; data: unknown }[]
   esito(

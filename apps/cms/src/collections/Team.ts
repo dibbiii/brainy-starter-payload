@@ -1,6 +1,6 @@
 import type { CollectionConfig } from 'payload'
 
-import { anyone, isStaff } from '../access'
+import { anyone, conAccount, isStaff } from '../access'
 import { obbligatorioTesto } from '../fields/obbligatorio'
 import { slugField } from '../fields/slug'
 
@@ -33,7 +33,13 @@ export const Team: CollectionConfig = {
       validate: obbligatorioTesto,
     },
     { name: 'photo', label: 'Foto', type: 'upload', relationTo: 'media' },
-    { name: 'email', label: 'Email', type: 'email' },
+    {
+      name: 'email',
+      label: 'Email',
+      type: 'email',
+      // Non leggibile dall'API anonima (raccolta di indirizzi per lo spam): lo snapshot la legge con la chiave.
+      access: { read: conAccount },
+    },
     { name: 'bio', label: 'Breve presentazione', type: 'textarea', localized: true },
     {
       // Non è tradotto: è la chiave con cui il blocco Team filtra le persone.

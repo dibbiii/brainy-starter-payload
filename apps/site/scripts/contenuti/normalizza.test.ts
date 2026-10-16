@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict'
 import { test } from 'node:test'
 
-import { globale, normalizza, nuovoContesto, voce } from './normalizza'
+import { globale, normalizza, nuovoContesto, problemaNomeFile, voce } from './normalizza'
 
 const media = (filename: string, extra: Record<string, unknown> = {}) => ({
   id: 1, filename, mimeType: 'image/png', filesize: 100, alt: null, ...extra,
@@ -53,6 +53,22 @@ test('nome file con percorso: errore', () => {
   assert.equal(ctx.errori.length, 1)
   assert.equal(uscita.image, undefined)
   assert.equal(ctx.media.size, 0)
+})
+
+test('nomi file non validi: ognuno con il suo motivo', () => {
+  for (const [nome, motivo] of [
+    ['..', /percorsi|punto/],
+    ['.htaccess', /punto/],
+    ['a\u0007.png', /caratteri/],
+    ['a:b.png', /caratteri/],
+    ['foto.', /finisce/],
+    ['CON.png', /riservato/],
+    [`${'a'.repeat(201)}.png`, /lungo/],
+  ] as const) {
+    assert.match(problemaNomeFile(nome) ?? '', motivo, nome)
+  }
+  assert.equal(problemaNomeFile('Gara #2 (estate) è bella.pdf'), undefined)
+  assert.equal(problemaNomeFile('console.png'), undefined)
 })
 
 test('media non leggibile (solo l\'id): omesso con un avviso', () => {
@@ -108,4 +124,9 @@ test('lo stesso avviso non si ripete', () => {
 test('globale(): normalizza un\'impostazione', () => {
   const uscita = globale('site', { globalType: 'site', id: 1, name: 'ASD', logo: media('l.png', { alt: 'Logo' }) }, nuovoContesto())
   assert.deepEqual(uscita, { name: 'ASD', logo: '/media/l.png', logo_alt: 'Logo' })
+})
+
+test('nomi riservati di Windows anche nelle varianti meno note', () => {
+  for (const nome of ['CONIN$.txt', 'conout$', 'COM¹.png', 'nul .txt', 'lpt9']) assert.match(problemaNomeFile(nome) ?? '', /riservato/, nome)
+  for (const nome of ['com0.png', 'aux_logo.png', 'console.jpg']) assert.equal(problemaNomeFile(nome), undefined, nome)
 })
