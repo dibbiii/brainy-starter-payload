@@ -4,8 +4,13 @@
 // come "/media/x.svg", testi alternativi in campi "*_alt", collegamenti tra contenuti per slug.
 import { z } from 'zod'
 
+import { linkValido, messaggioLink } from './link'
+
 // Un campo di testo vuoto vale come assente.
 const optStr = z.string().nullish().transform((v) => v || undefined)
+// Link scritti dagli editor (vedi link.ts).
+const link = z.string().refine(linkValido, messaggioLink)
+const optLink = optStr.refine((v) => v === undefined || linkValido(v), messaggioLink)
 
 // --- Blocchi delle sezioni: uno per ogni blocco del CMS (apps/cms/src/blocks) ---------------------
 // I testi formattati (`content`) sono già HTML.
@@ -16,7 +21,7 @@ const hero = z.object({
   image: optStr,
   image_alt: optStr,
   button_label: optStr,
-  button_url: optStr,
+  button_url: optLink,
   size: z.enum(['large', 'medium']).default('large'),
 })
 const text = z.object({ type: z.literal('text'), title: optStr, content: z.string() })
@@ -33,7 +38,7 @@ const cards = z.object({
   title: optStr,
   intro: optStr,
   items: z.array(
-    z.object({ title: z.string(), highlight: optStr, text: optStr, image: optStr, image_alt: optStr, url: optStr }),
+    z.object({ title: z.string(), highlight: optStr, text: optStr, image: optStr, image_alt: optStr, url: optLink }),
   ).default([]),
 })
 const activitiesList = z.object({
@@ -41,7 +46,7 @@ const activitiesList = z.object({
   title: optStr,
   intro: optStr,
   link_label: optStr,
-  link_url: optStr,
+  link_url: optLink,
   show_managers: z.boolean().nullish().default(true),
 })
 const team = z.object({
@@ -63,7 +68,7 @@ const cta = z.object({
   title: z.string(),
   text: optStr,
   button_label: z.string(),
-  button_url: z.string(),
+  button_url: link,
 })
 const documents = z.object({
   type: z.literal('documents'),
@@ -158,7 +163,7 @@ export const siteData = z.object({
   show_name_with_logo: z.boolean().nullish(),
   header_subtitle: optStr,
   header_button_label: optStr,
-  header_button_url: optStr,
+  header_button_url: optLink,
   page_header_style: z.enum(['simple', 'band']).nullish(),
   og_image: optStr,
   og_image_alt: optStr,
@@ -166,8 +171,8 @@ export const siteData = z.object({
   phone: optStr,
   address: optStr,
   tax_id: optStr,
-  socials: z.array(z.object({ platform: z.string(), url: z.string() })).nullish(),
-  privacy_url: optStr,
+  socials: z.array(z.object({ platform: z.string(), url: link })).nullish(),
+  privacy_url: optLink,
   footer_note: optStr,
   footer_logo: optStr,
   footer_logo_alt: optStr,
@@ -176,7 +181,7 @@ export const siteData = z.object({
       z.object({
         title: z.string(),
         from_activities: z.boolean().nullish(),
-        links: z.array(z.object({ label: z.string(), url: z.string() })).nullish(),
+        links: z.array(z.object({ label: z.string(), url: link })).nullish(),
       }),
     )
     .nullish(),
@@ -191,7 +196,7 @@ export const siteData = z.object({
   news_box_title: optStr,
   news_box_text: optStr,
   news_box_button_label: optStr,
-  news_box_button_url: optStr,
+  news_box_button_url: optLink,
 })
 export type SiteData = z.infer<typeof siteData>
 
@@ -210,9 +215,9 @@ export const menuData = z.object({
     .array(
       z.object({
         label: z.string(),
-        url: optStr,
+        url: optLink,
         activities_submenu: z.boolean().nullish(),
-        children: z.array(z.object({ label: z.string(), url: z.string() })).nullish(),
+        children: z.array(z.object({ label: z.string(), url: link })).nullish(),
       }),
     )
     .default([]),
@@ -225,7 +230,7 @@ export const sponsorsData = z.object({
         name: z.string(),
         logo: optStr,
         logo_alt: optStr,
-        url: optStr,
+        url: optLink,
         tier: z.enum(['main', 'partner', 'institutional']).default('partner'),
       }),
     )

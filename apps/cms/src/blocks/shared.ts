@@ -1,6 +1,6 @@
 import type { TextareaField, TextField } from 'payload'
 
-import { obbligatorioTesto } from '../fields/obbligatorio'
+import { testoObbligatorio } from '../fields/obbligatorio'
 
 // Campi che si ripetono in molti blocchi. Il testo si traduce (localized) - la struttura dei blocchi è comune, i testi no.
 
@@ -10,7 +10,7 @@ export const title = (required = false): TextField => ({
   label: 'Titolo',
   type: 'text',
   localized: true,
-  ...(required ? { required: true, validate: obbligatorioTesto } : {}),
+  ...(required ? testoObbligatorio() : {}),
 })
 
 export const intro = (): TextareaField => ({

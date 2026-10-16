@@ -1,7 +1,8 @@
 import type { CollectionConfig } from 'payload'
 
 import { anyone, conAccount, isStaff } from '../access'
-import { obbligatorioTesto } from '../fields/obbligatorio'
+import { versioneItalianaCollezione } from '../hooks/versioneItaliana'
+import { testoObbligatorio } from '../fields/obbligatorio'
 import { slugField } from '../fields/slug'
 
 export const Team: CollectionConfig = {
@@ -14,6 +15,7 @@ export const Team: CollectionConfig = {
   },
   // Numero piccolo = prima; a parità di numero, in ordine alfabetico.
   defaultSort: ['order', 'name'],
+  hooks: { beforeChange: [versioneItalianaCollezione] },
   access: {
     // Le persone sono dati pubblici del sito. Salvate direttamente, senza bozze: le modifiche si vedono alla ricostruzione successiva.
     read: anyone,
@@ -28,9 +30,8 @@ export const Team: CollectionConfig = {
       name: 'role',
       label: 'Ruolo',
       type: 'text',
-      required: true,
       localized: true,
-      validate: obbligatorioTesto,
+      ...testoObbligatorio(),
     },
     { name: 'photo', label: 'Foto', type: 'upload', relationTo: 'media' },
     {

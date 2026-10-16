@@ -1,6 +1,7 @@
 import type { Block } from 'payload'
 
 import { intro, title } from './shared'
+import { validaLink } from '../fields/link'
 
 export const Cards: Block = {
   slug: 'cards',
@@ -25,7 +26,7 @@ export const Cards: Block = {
         },
         { name: 'text', label: 'Testo', type: 'textarea', localized: true },
         { name: 'image', label: 'Immagine', type: 'upload', relationTo: 'media' },
-        { name: 'url', label: 'Link', type: 'text' },
+        { name: 'url', label: 'Link', type: 'text', validate: validaLink },
       ],
     },
   ],

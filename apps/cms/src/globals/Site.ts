@@ -1,8 +1,10 @@
 import type { GlobalConfig } from 'payload'
 
 import { anyone, isStaff } from '../access'
+import { versioneItalianaGlobale } from '../hooks/versioneItaliana'
 import { perLingua } from '../blocks/shared'
-import { obbligatorioTesto } from '../fields/obbligatorio'
+import { testoObbligatorio } from '../fields/obbligatorio'
+import { validaLink } from '../fields/link'
 
 // Testi: il motto, il sottotitolo, le note e le etichette si traducono; contatti, indirizzi,
 // link, immagini e opzioni sono comuni a tutte le lingue.
@@ -10,6 +12,7 @@ export const Site: GlobalConfig = {
   slug: 'site',
   label: 'Dati del sito',
   admin: { group: 'Impostazioni' },
+  hooks: { beforeChange: [versioneItalianaGlobale] },
   access: {
     read: anyone,
     update: isStaff,
@@ -23,6 +26,10 @@ export const Site: GlobalConfig = {
       label: 'Indirizzo del sito',
       type: 'text',
       required: true,
+      // Indirizzo completo: con un percorso come "/" sitemap e anteprime di condivisione sarebbero sbagliate.
+      validate: (valore: string | null | undefined) =>
+        (typeof valore === 'string' && /^https?:\/\/([^\s/?#]+\.[^\s/?#]+|localhost(:\d+)?)\/?$/.test(valore.trim())) ||
+        "Scrivi l'indirizzo completo del sito, es. https://www.esempio.it",
       admin: { description: 'Es. https://www.esempio.it — serve per sitemap e condivisioni' },
     },
     { name: 'logo', label: 'Logo', type: 'upload', relationTo: 'media' },
@@ -47,7 +54,7 @@ export const Site: GlobalConfig = {
       localized: true,
       admin: { description: 'Es. Tesseramento. Compare solo se compili anche il link' },
     },
-    { name: 'header_button_url', label: 'Pulsante in evidenza — link', type: 'text' },
+    { name: 'header_button_url', label: 'Pulsante in evidenza — link', type: 'text', validate: validaLink },
     {
       name: 'page_header_style',
       label: 'Intestazione delle pagine interne',
@@ -80,13 +87,14 @@ export const Site: GlobalConfig = {
           required: true,
           options: ['Facebook', 'Instagram', 'YouTube', 'Strava', 'LinkedIn', 'TikTok', 'Altro'],
         },
-        { name: 'url', label: 'Link', type: 'text', required: true },
+        { name: 'url', label: 'Link', type: 'text', validate: validaLink, required: true },
       ],
     },
     {
       name: 'privacy_url',
       label: 'Link informativa privacy',
       type: 'text',
+      validate: validaLink,
       required: true,
       defaultValue: '/privacy',
     },
@@ -111,9 +119,8 @@ export const Site: GlobalConfig = {
           name: 'title',
           label: 'Titolo della colonna',
           type: 'text',
-          required: true,
           localized: true,
-          validate: obbligatorioTesto,
+          ...testoObbligatorio(),
         },
         {
           name: 'from_activities',
@@ -134,11 +141,10 @@ export const Site: GlobalConfig = {
               name: 'label',
               label: 'Testo',
               type: 'text',
-              required: true,
               localized: true,
-              validate: obbligatorioTesto,
+              ...testoObbligatorio(),
             },
-            { name: 'url', label: 'Link', type: 'text', required: true },
+            { name: 'url', label: 'Link', type: 'text', validate: validaLink, required: true },
           ],
         },
       ],
@@ -250,6 +256,7 @@ export const Site: GlobalConfig = {
       name: 'news_box_button_url',
       label: 'News: riquadro nella colonna — link pulsante',
       type: 'text',
+      validate: validaLink,
     },
   ],
 }

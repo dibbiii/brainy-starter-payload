@@ -1,8 +1,9 @@
 import type { CollectionConfig } from 'payload'
 
-import { obbligatorioTesto } from '../fields/obbligatorio'
+import { testoObbligatorio } from '../fields/obbligatorio'
 
 import { isStaff, publishedOrStaff } from '../access'
+import { versioneItalianaCollezione } from '../hooks/versioneItaliana'
 import { sectionsField } from '../fields/sections'
 import { slugField } from '../fields/slug'
 
@@ -14,6 +15,7 @@ export const Pages: CollectionConfig = {
     defaultColumns: ['title', 'slug', '_status', 'updatedAt'],
     group: 'Contenuti',
   },
+  hooks: { beforeChange: [versioneItalianaCollezione] },
   access: {
     // I visitatori vedono solo le pagine pubblicate; le bozze sono visibili a chi ha un account.
     read: publishedOrStaff,
@@ -23,7 +25,7 @@ export const Pages: CollectionConfig = {
   },
   versions: { drafts: true },
   fields: [
-    { name: 'title', label: 'Titolo', type: 'text', required: true, localized: true, validate: obbligatorioTesto },
+    { name: 'title', label: 'Titolo', type: 'text', localized: true, ...testoObbligatorio() },
     {
       name: 'description',
       label: 'Descrizione per Google',

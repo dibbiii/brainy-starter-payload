@@ -1,7 +1,8 @@
 import type { CollectionConfig } from 'payload'
 
 import { isStaff, publishedOrStaff } from '../access'
-import { obbligatorioFile, obbligatorioTesto, obbligatorioTestoFormattato } from '../fields/obbligatorio'
+import { versioneItalianaCollezione } from '../hooks/versioneItaliana'
+import { obbligatorioFile, obbligatorioTestoFormattato, testoObbligatorio } from '../fields/obbligatorio'
 import { slugField } from '../fields/slug'
 
 export const News: CollectionConfig = {
@@ -13,6 +14,7 @@ export const News: CollectionConfig = {
     group: 'Contenuti',
   },
   defaultSort: '-date',
+  hooks: { beforeChange: [versioneItalianaCollezione] },
   access: {
     // I visitatori vedono solo le news pubblicate; le bozze sono visibili a chi ha un account.
     // Le bozze di Payload sostituiscono il campo «Bozza» da spuntare a mano della base.
@@ -27,9 +29,8 @@ export const News: CollectionConfig = {
       name: 'title',
       label: 'Titolo',
       type: 'text',
-      required: true,
       localized: true,
-      validate: obbligatorioTesto,
+      ...testoObbligatorio(),
     },
     {
       name: 'date',
@@ -64,9 +65,8 @@ export const News: CollectionConfig = {
           name: 'label',
           label: 'Nome del file',
           type: 'text',
-          required: true,
           localized: true,
-          validate: obbligatorioTesto,
+          ...testoObbligatorio(),
         },
         {
           // Come nei Documenti: di solito esiste una versione del file per lingua; se manca vale quella della lingua predefinita.

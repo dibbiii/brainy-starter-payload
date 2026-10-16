@@ -1,6 +1,6 @@
 import type { Block } from 'payload'
 
-import { obbligatorioTesto } from '../fields/obbligatorio'
+import { testoObbligatorio } from '../fields/obbligatorio'
 
 import { title } from './shared'
 
@@ -33,18 +33,16 @@ export const Stats: Block = {
           name: 'value',
           label: 'Numero',
           type: 'text',
-          required: true,
           localized: true,
-          validate: obbligatorioTesto,
+          ...testoObbligatorio(),
           admin: { description: 'Anche con testo o zero iniziale. Es. 1947, 07, 120 km' },
         },
         {
           name: 'label',
           label: 'Descrizione',
           type: 'text',
-          required: true,
           localized: true,
-          validate: obbligatorioTesto,
+          ...testoObbligatorio(),
           admin: { description: 'Es. Anno di fondazione' },
         },
       ],

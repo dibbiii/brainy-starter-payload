@@ -1,12 +1,15 @@
 import type { GlobalConfig } from 'payload'
 
 import { anyone, isStaff } from '../access'
-import { obbligatorioTesto } from '../fields/obbligatorio'
+import { versioneItalianaGlobale } from '../hooks/versioneItaliana'
+import { testoObbligatorio } from '../fields/obbligatorio'
+import { validaLink } from '../fields/link'
 
 export const Menu: GlobalConfig = {
   slug: 'menu',
   label: 'Menu',
   admin: { group: 'Impostazioni' },
+  hooks: { beforeChange: [versioneItalianaGlobale] },
   access: {
     read: anyone,
     update: isStaff,
@@ -22,15 +25,15 @@ export const Menu: GlobalConfig = {
           name: 'label',
           label: 'Etichetta',
           type: 'text',
-          required: true,
           localized: true,
-          validate: obbligatorioTesto,
+          ...testoObbligatorio(),
         },
         {
           // Il link è comune a tutte le lingue: il prefisso della lingua lo aggiunge il sito.
           name: 'url',
           label: 'Link',
           type: 'text',
+          validate: validaLink,
           admin: {
             description: 'Es. /chi-siamo oppure https://… Lascia vuoto se la voce ha solo un sottomenu',
           },
@@ -55,11 +58,10 @@ export const Menu: GlobalConfig = {
               name: 'label',
               label: 'Etichetta',
               type: 'text',
-              required: true,
               localized: true,
-              validate: obbligatorioTesto,
+              ...testoObbligatorio(),
             },
-            { name: 'url', label: 'Link', type: 'text', required: true },
+            { name: 'url', label: 'Link', type: 'text', validate: validaLink, required: true },
           ],
         },
       ],

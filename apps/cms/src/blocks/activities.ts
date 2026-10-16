@@ -1,6 +1,7 @@
 import type { Block } from 'payload'
 
 import { intro, title } from './shared'
+import { validaLink } from '../fields/link'
 
 export const Activities: Block = {
   slug: 'activities',
@@ -19,7 +20,7 @@ export const Activities: Block = {
       localized: true,
       admin: { description: 'Es. I responsabili di settore. Compare solo se compili anche il link' },
     },
-    { name: 'link_url', label: 'Indirizzo del link', type: 'text' },
+    { name: 'link_url', label: 'Indirizzo del link', type: 'text', validate: validaLink },
     { name: 'show_managers', label: 'Mostra i responsabili', type: 'checkbox', defaultValue: true },
   ],
 }

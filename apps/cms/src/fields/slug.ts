@@ -1,6 +1,7 @@
 import type { TextField } from 'payload'
 
 import { isAdminField } from '../access'
+import { stessaLingua } from '../hooks/stessaLingua'
 
 /** "Corsa in montagna!" -> "corsa-in-montagna": senza accenti né simboli (è -> e, à -> a). */
 export const slugify = (testo: string): string =>
@@ -38,6 +39,20 @@ export const slugField = ({ da = 'title', conData = false }: OpzioniSlug = {}): 
     (typeof valore === 'string' && /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(valore)) ||
     'Usa solo minuscole, numeri e trattini (es. la-societa).',
   hooks: {
+    // "Duplica" di serie aggiungerebbe " - Copy", che non è uno slug valido: si usa il primo "-copia" libero.
+    beforeDuplicate: [
+      async ({ value, req, collection }) => {
+        if (typeof value !== 'string' || !collection) return undefined
+        for (let n = 1; n <= 50; n++) {
+          const candidato = `${value}-copia${n > 1 ? `-${n}` : ''}`
+          const { totalDocs } = await stessaLingua(req, () =>
+            req.payload.count({ collection: collection.slug, where: { slug: { equals: candidato } }, req }),
+          )
+          if (totalDocs === 0) return candidato
+        }
+        return undefined
+      },
+    ],
     beforeValidate: [
       ({ value, data, operation }) => {
         if (operation !== 'create' || value) return value

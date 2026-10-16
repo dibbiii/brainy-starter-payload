@@ -1,6 +1,6 @@
 import type { Block } from 'payload'
 
-import { obbligatorioTesto } from '../fields/obbligatorio'
+import { testoObbligatorio } from '../fields/obbligatorio'
 
 import { intro, perLingua } from './shared'
 
@@ -13,9 +13,8 @@ export const Contacts: Block = {
       name: 'title',
       label: 'Titolo',
       type: 'text',
-      required: true,
       localized: true,
-      validate: obbligatorioTesto,
+      ...testoObbligatorio(),
       defaultValue: perLingua({ it: 'Contatti', en: 'Contact', de: 'Kontakt' }),
     },
     intro(),

@@ -1,6 +1,7 @@
 import type { GlobalConfig } from 'payload'
 
 import { anyone, isStaff } from '../access'
+import { validaLink } from '../fields/link'
 
 export const Sponsors: GlobalConfig = {
   slug: 'sponsors',
@@ -20,7 +21,7 @@ export const Sponsors: GlobalConfig = {
         // Il nome di uno sponsor non si traduce.
         { name: 'name', label: 'Nome', type: 'text', required: true },
         { name: 'logo', label: 'Logo', type: 'upload', relationTo: 'media' },
-        { name: 'url', label: 'Sito', type: 'text' },
+        { name: 'url', label: 'Sito', type: 'text', validate: validaLink },
         {
           name: 'tier',
           label: 'Livello',

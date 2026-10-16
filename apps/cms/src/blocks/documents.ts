@@ -1,6 +1,6 @@
 import type { Block } from 'payload'
 
-import { obbligatorioFile, obbligatorioTesto } from '../fields/obbligatorio'
+import { obbligatorioFile, testoObbligatorio } from '../fields/obbligatorio'
 
 import { title } from './shared'
 
@@ -16,7 +16,7 @@ export const Documents: Block = {
       type: 'array',
       labels: { singular: 'Documento', plural: 'Documenti' },
       fields: [
-        { name: 'label', label: 'Nome', type: 'text', required: true, localized: true, validate: obbligatorioTesto },
+        { name: 'label', label: 'Nome', type: 'text', localized: true, ...testoObbligatorio() },
         {
           // Un documento (es. lo statuto) di solito esiste in una versione per lingua. Se manca, vale quello della lingua predefinita.
           name: 'file',

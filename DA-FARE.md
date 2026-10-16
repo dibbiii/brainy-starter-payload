@@ -29,16 +29,18 @@ Legenda: [P] da riportare anche nella base Sveltia (e poi in Cauriol), [V] solo 
 - [x] Lettura delle email del Team con una chiave di lettura (collezione `chiavi-api`, `npm run chiave:snapshot`, `CMS_API_KEY`)
 
 ## Fase 3 · CMS [V]
-- [ ] Slug libero (`beforeDuplicate` + suffisso) e Duplica su Team
-- [ ] Validatori composti con quelli di `payload/shared`
-- [ ] Titolo obbligatorio in italiano anche creando/pubblicando in un'altra lingua
-- [ ] Prova NOT NULL nel pannello (Team, Menu, Dati del sito) ed eventuale correzione
-- [ ] `access.unlock` solo admin, ultimo admin protetto, `first-register` bloccato in produzione + comando per il primo admin
-- [ ] URL validati nel CMS e nello schema dello snapshot
-- [ ] Media: estensione coerente con il tipo, `resizeOptions` (via i metadati GPS, da provare con una foto)
+- [x] Duplica: slug `-copia`, `-copia-2`… (provato su Team e Pagine)
+- [x] Validatori composti con quelli di `payload/shared`; link del testo formattato controllati (Lexical non lo fa sul server)
+- [x] Creare solo in italiano; pubblicare/salvare da un'altra lingua solo con la versione italiana completa (hooks/versioneItaliana.ts)
+- [x] NOT NULL confermato (traduzione di un elemento creato solo in italiano): ora una traduzione vuota si salva ""
+- [x] `access.unlock` solo admin, ultimo admin protetto, primo utente in produzione solo con `npm run admin:crea`
+- [x] Link validati nel CMS e nello schema (regola in `packages/content/src/link.ts`); indirizzo del sito completo
+- [x] Media: solo estensioni dell'elenco, tipi espliciti, `resizeOptions` (provato: foto raddrizzata, EXIF e GPS tolti)
 - [x] Email del Team leggibili solo con account (fatto nella Fase 2)
-- [ ] Titoli dell'editor senza h1 (`HeadingFeature`): oggi lo snapshot trasforma h1 in h2
-- [ ] Correggere il commento su `saveToJWT` in `Users.ts`
+- [x] Titoli dell'editor senza h1 (`HeadingFeature` h2–h4, provato nel pannello)
+- [x] Corretto il commento su `saveToJWT` (Payload rilegge l'utente a ogni richiesta)
+- [ ] Documentare `npm run admin:crea` (Fase 11) e l'uso in hosting: la password stampata finisce nei log se il comando gira come job della piattaforma
+- [ ] Da documentare: un'immagine caricata con un tipo dichiarato falso (es. JPEG come `.pdf`) non passa da sharp e tiene i metadati
 
 ## Fase 4 · Seed [V]
 - [ ] Transazioni per elemento
@@ -76,7 +78,13 @@ Legenda: [P] da riportare anche nella base Sveltia (e poi in Cauriol), [V] solo 
 - [ ] Comandi radice: `build`, `check`, `test` di entrambe le app
 - [ ] Prova completa da clone nuovo seguendo solo il README
 
-## Fase 10 · Documentazione
+## Fase 10 · Codice in inglese (richiesta dell'utente, dopo tutte le altre correzioni)
+- [ ] Nomi di file, cartelle, funzioni, variabili, tipi, costanti e comandi npm (es. `contenuti:aggiorna`, `chiave:snapshot`) in inglese; in italiano restano solo i commenti
+- [ ] Da chiarire con l'utente prima di iniziare: i testi mostrati alle persone (etichette e messaggi del pannello, messaggi dei comandi, testi del sito) restano in italiano?
+- [ ] Da chiarire: vale anche per la base Sveltia e per Cauriol? (porting come nella Fase 1)
+- [ ] Dopo la rinomina: test, controllo dei tipi, build, seed e snapshot di prova, verifica con subagente
+
+## Fase 11 · Documentazione (dopo la rinomina, così usa i nomi nuovi)
 - [ ] README per Payload, guide `docs/` riscritte
 - [ ] Documentare `CMS_API_KEY` e `npm run chiave:snapshot` (anche in hosting: variabile della piattaforma)
 - [ ] `docs/confronto.md` corretto (affermazioni sbagliate, "verificato" solo con prova riproducibile)
@@ -85,5 +93,6 @@ Legenda: [P] da riportare anche nella base Sveltia (e poi in Cauriol), [V] solo 
 - [ ] Cancellare questo file
 
 ## Promemoria
+- Negli hook, una lettura con l'API locale e `req` cambia `req.locale`: usare `stessaLingua()` (hooks/stessaLingua.ts).
 - La base Sveltia ha lo stesso `core.autocrlf=true`: rinormalizzarla prima di applicare le patch.
 - Nella base `md()` usa `marked` su contenuti degli editor senza sanificare: lì gli editor hanno accesso al repository, rischio accettato.

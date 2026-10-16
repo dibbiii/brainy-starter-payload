@@ -1,6 +1,6 @@
 import type { Block } from 'payload'
 
-import { obbligatorioTesto } from '../fields/obbligatorio'
+import { testoObbligatorio } from '../fields/obbligatorio'
 
 import { perLingua } from './shared'
 
@@ -13,9 +13,8 @@ export const LatestNews: Block = {
       name: 'title',
       label: 'Titolo',
       type: 'text',
-      required: true,
       localized: true,
-      validate: obbligatorioTesto,
+      ...testoObbligatorio(),
       defaultValue: perLingua({ it: 'Ultime news', en: 'Latest news', de: 'Aktuelle Neuigkeiten' }),
     },
     { name: 'count', label: 'Quante news', type: 'number', defaultValue: 3, min: 1, max: 12 },

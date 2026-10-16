@@ -12,6 +12,7 @@
     "generate:importmap": "cross-env NODE_OPTIONS=--no-deprecation payload generate:importmap",
     "generate:types": "cross-env NODE_OPTIONS=--no-deprecation payload generate:types",
     "seed": "cross-env NODE_OPTIONS=--no-deprecation payload run scripts/seed.ts",
+    "admin:crea": "cross-env NODE_OPTIONS=--no-deprecation payload run scripts/admin-crea.ts",
     "chiave:snapshot": "cross-env NODE_OPTIONS=--no-deprecation payload run scripts/chiave-snapshot.ts",
     "check": "tsc --noEmit"
   },

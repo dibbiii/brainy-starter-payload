@@ -3,7 +3,7 @@ import './env'
 
 import { defaultLocale, locales } from '@brainy/content'
 import { postgresAdapter } from '@payloadcms/db-postgres'
-import { LinkFeature, lexicalEditor } from '@payloadcms/richtext-lexical'
+import { HeadingFeature, LinkFeature, lexicalEditor } from '@payloadcms/richtext-lexical'
 import { it } from '@payloadcms/translations/languages/it'
 import path from 'path'
 import { buildConfig } from 'payload'
@@ -41,6 +41,7 @@ const FUNZIONI_ESCLUSE = [
   'underline',
   'inlineCode',
   'link', // si rimette sotto, senza i collegamenti a documenti interni
+  'heading', // si rimette sotto, senza "Titolo 1": l'h1 della pagina è già il suo titolo
 ]
 
 // DATABASE_URL, se presente, ha la precedenza (database esterno); altrimenti
@@ -71,6 +72,7 @@ export default buildConfig({
       ...defaultFeatures.filter(({ key }) => !FUNZIONI_ESCLUSE.includes(key)),
       // Elenco vuoto = nessuna collezione collegabile: restano solo i link con indirizzo libero.
       LinkFeature({ enabledCollections: [] }),
+      HeadingFeature({ enabledHeadingSizes: ['h2', 'h3', 'h4'] }),
     ],
   }),
   // Pannello solo in italiano: con una sola lingua il codice caricato dal browser è più piccolo e un browser in inglese vede comunque l'italiano.

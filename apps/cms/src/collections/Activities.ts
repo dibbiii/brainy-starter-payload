@@ -1,7 +1,8 @@
 import type { CollectionConfig } from 'payload'
 
 import { isStaff, publishedOrStaff } from '../access'
-import { obbligatorioTesto } from '../fields/obbligatorio'
+import { versioneItalianaCollezione } from '../hooks/versioneItaliana'
+import { testoObbligatorio } from '../fields/obbligatorio'
 import { sectionsField } from '../fields/sections'
 import { slugField } from '../fields/slug'
 
@@ -16,6 +17,7 @@ export const Activities: CollectionConfig = {
   },
   // Numero piccolo = prima; a parità di numero, in ordine alfabetico.
   defaultSort: ['order', 'title'],
+  hooks: { beforeChange: [versioneItalianaCollezione] },
   access: {
     // I visitatori vedono solo le attività pubblicate; le bozze sono visibili a chi ha un account.
     read: publishedOrStaff,
@@ -29,9 +31,8 @@ export const Activities: CollectionConfig = {
       name: 'title',
       label: 'Nome',
       type: 'text',
-      required: true,
       localized: true,
-      validate: obbligatorioTesto,
+      ...testoObbligatorio(),
     },
     {
       name: 'description',
